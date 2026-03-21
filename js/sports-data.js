@@ -1153,23 +1153,23 @@ const SportsData = {
   },
 
   // ============================================================
-  // HOCKEY (ICE HOCKEY)
+  // FIELD HOCKEY
   // ============================================================
   hockey: {
     name: 'Hockey',
-    icon: '\u{1F3D2}',
+    icon: '\u{1F3D1}',
     color: '#0D47A1',
     roles: [
-      { id: 'center', name: 'Center' },
-      { id: 'wing', name: 'Wing' },
-      { id: 'defenseman', name: 'Defenseman' },
-      { id: 'goalie', name: 'Goalie' },
+      { id: 'forward', name: 'Forward' },
+      { id: 'midfielder', name: 'Midfielder' },
+      { id: 'defender', name: 'Defender' },
+      { id: 'goalkeeper', name: 'Goalkeeper' },
     ],
     analysisTypes: [
-      { id: 'skating', name: 'Skating', icon: '\u26F8\uFE0F' },
-      { id: 'shooting', name: 'Shooting', icon: '\u{1F3D2}' },
-      { id: 'passing', name: 'Passing', icon: '\u{1F3D2}' },
-      { id: 'checking', name: 'Checking', icon: '\u{1F4AA}' },
+      { id: 'dribbling', name: 'Dribbling', icon: '\u{1F3D1}' },
+      { id: 'hitting', name: 'Hitting', icon: '\u{1F3D1}' },
+      { id: 'passing', name: 'Passing', icon: '\u{1F3D1}' },
+      { id: 'defending', name: 'Defending', icon: '\u{1F6E1}\uFE0F' },
     ],
     levels: [
       { id: 'beginner', name: 'Beginner' },
@@ -1178,265 +1178,558 @@ const SportsData = {
       { id: 'elite', name: 'Elite' },
     ],
     aspects: {
-      skating: [
+      dribbling: [
         {
-          name: 'Stride Technique',
-          goodText: 'Powerful, efficient stride with full leg extension on each push. Your knee drive is strong, recovery is quick, and you generate maximum glide from each stride. Upper body stays quiet and balanced.',
-          improveText: 'Your stride is choppy with incomplete leg extension. You are not finishing the push, leaving power on the table. Focus on driving each leg to full extension before recovering. Think of pushing the ice away behind you.',
-          criticalText: 'Very short, inefficient strides with minimal knee bend and almost no extension. You are running on ice rather than skating. Rebuild from basics: deep knee bend, full extension, glide, recover. Each stride should feel powerful.',
-          drill: { name: 'Single-Leg Glide Drill', desc: 'Skate from blue line to blue line using only one push per leg, alternating. Focus on full extension and maximum glide from each push. 8 trips. Time yourself and aim to reduce strokes needed per trip.' },
+          name: 'Indian Dribble',
+          goodText: 'Excellent Indian dribble with rapid alternation between forehand and reverse stick. The ball stays glued to your stick while you move at speed. Your head is up, scanning for options while dribbling through traffic.',
+          improveText: 'Your Indian dribble is too slow, allowing defenders to predict your movements. Speed up the forehand-reverse alternation and keep the ball closer to the stick head. Practice the rhythm at walking pace, then build to a jog.',
+          criticalText: 'The Indian dribble is not functional. You are losing the ball on the reverse stick side every time. Start stationary: tap the ball forehand, then reverse, keeping touches soft and the ball within 15 cm of the stick. 5 minutes daily until comfortable.',
+          drill: { name: 'Cone Slalom Indian Dribble', desc: 'Set up 10 cones 1.5 metres apart on the turf. Weave through using only the Indian dribble. 8 trips, increasing speed each time. The ball must stay within one stick-length throughout. Time yourself and track improvement.' },
         },
         {
-          name: 'Crossovers',
-          goodText: 'Smooth, powerful crossovers in both directions. You generate speed through the turns with each crossover step adding acceleration. Your inside and outside edges are equally strong.',
-          improveText: 'Crossovers are functional but lack power, especially in one direction. You are stepping over rather than driving with each cross. Push hard with the outside leg and pull with the inside edge on each step.',
-          criticalText: 'Crossovers are very awkward and slow. You are hesitant to fully commit to the crossing step. Start by practising at low speed around the face-off circles, focusing on the mechanics before adding speed.',
-          drill: { name: 'Circle Crossover Power', desc: 'Skate around one face-off circle using only crossovers. Complete 10 laps in each direction, focusing on driving with every step. Time your laps and aim to get faster each round. Rest 30 seconds between direction changes.' },
+          name: 'Elimination Skills',
+          goodText: 'Sharp, deceptive elimination moves that beat defenders one-on-one. Your body feints sell the dummy convincingly, and you accelerate past with the ball under control. You have multiple moves to choose from.',
+          improveText: 'Your elimination moves are telegraphed because you lack a convincing body feint before the move. Sell the fake with your shoulders and hips first, then drag the ball past. The defender should be moving the wrong way before you change direction.',
+          criticalText: 'Elimination skills are ineffective. Defenders are reading you easily. You need one reliable move: practice the drag left, push right (or vice versa) until it is automatic. Add the body feint only after the stick skill is clean.',
+          drill: { name: 'Beat the Cone Defender', desc: 'Place a cone as a defender on the pitch. Approach at game speed, execute an elimination (drag, dummy, or spin), and accelerate into the circle. 4 sets of 10 reps, alternating moves. A partner judges each attempt.' },
         },
         {
-          name: 'Stops & Starts',
-          goodText: 'Explosive starts from a standstill and crisp hockey stops on both sides. Your first three steps generate immediate speed and your stops leave you balanced and ready to go in a new direction.',
-          improveText: 'Your stops are spraying ice but you are not fully stopping before changing direction. Commit to a full stop by digging both edges in simultaneously. Your starts need more knee bend for a more explosive first step.',
-          criticalText: 'Stops are uncontrolled, causing you to slide past your intended stopping point. You are leaning too far back and only using one foot to stop. Practice two-foot stops at progressively higher speeds.',
-          drill: { name: 'Red Light Green Light', desc: 'Skate at three-quarter speed. On a whistle, perform a full hockey stop. On a second whistle, explode in the opposite direction. Alternate stop sides. 3 sets of 10 stops. Focus on balance at the stop point.' },
+          name: 'Close Control',
+          goodText: 'Outstanding close control in tight spaces. You receive under pressure and keep possession with minimal touches. The ball is always on the flat side of your stick and you can change direction instantly.',
+          improveText: 'You lose the ball in congested areas because your first touch pushes the ball too far. Cushion the ball on reception by softening your grip and angling the stick face down slightly. Keep touches short in tight spaces.',
+          criticalText: 'Close control is a major weakness. The ball bounces off your stick in traffic. Focus on grip pressure — too tight kills your touch. Relax the left hand, guide with the right, and practice receiving hard passes from 5 metres. 50 receptions daily.',
+          drill: { name: 'Box Control Drill', desc: 'Mark a 3x3 metre box on the turf. A partner feeds balls from different angles. Control and keep possession inside the box for 10 seconds each feed. 4 sets of 8 feeds. Track how many you keep inside the box.' },
         },
         {
-          name: 'Edge Work',
-          goodText: 'Outstanding edge control with smooth transitions between inside and outside edges. You are confident on both edges in both directions, which gives you excellent agility and deception at speed.',
-          improveText: 'Your inside edges are solid but outside edge control needs work. You avoid outside edges in turns, limiting your agility. Dedicate practice time to outside edge drills and tight turns on your weak side.',
-          criticalText: 'Limited edge control is restricting your skating fundamentally. You are skating flat-footed rather than using edges. Start with basic inside and outside edge holds on each foot, gliding the full length of the ice.',
-          drill: { name: 'Edge Control Figure-8s', desc: 'Perform figure-8 patterns between the face-off circles using only inside edges, then only outside edges. Stay low with knees bent. 5 figure-8s on inside edges, 5 on outside edges, each direction. 3 sets.' },
+          name: 'Speed Dribbling',
+          goodText: 'Fast, efficient carrying of the ball over distance. You push the ball ahead at the right weight and sprint onto it without breaking stride. Your open-field speed with the ball nearly matches your speed without it.',
+          improveText: 'You slow down too much when carrying over distance. Push the ball 3-4 metres ahead on open turf and sprint to it. Use the flat side and keep the stick low to the ground on the push. Only use close control when a defender is near.',
+          criticalText: 'Speed dribbling is very slow. You are tapping the ball every step instead of pushing and running. On open pitch, one strong push and 3-4 running strides before the next touch. Practice push-and-sprint the full pitch length.',
+          drill: { name: 'Speed Carry Sprints', desc: 'Sprint the full pitch length while carrying the ball. Push ahead 3-4 metres, sprint onto it, repeat. 8 sprints with jog-back recovery. Time each and compare to your sprint without a ball. Aim within 1.5 seconds.' },
         },
       ],
-      shooting: [
+      hitting: [
         {
-          name: 'Wrist Shot',
-          goodText: 'Quick, accurate wrist shot with the puck starting at the mid-point of the blade, rolling to the toe on release. Your weight transfers from back to front and the follow-through points at the target.',
-          improveText: 'Your wrist shot lacks power because you are not loading the stick properly. Pull the puck from behind your back foot, lean into the stick to flex it, then snap the wrist and roll the puck off the toe.',
-          criticalText: 'The wrist shot is more of a push than a shot. There is no stick flex and no wrist snap. You need to learn to load the stick against the ice and use the flex to propel the puck. Start with stationary shooting focusing on technique.',
-          drill: { name: 'Snap and Release Drill', desc: 'From a stationary position, place the puck at your back foot. Pull it forward, load the stick by pressing down, then snap your wrists and release. Aim at specific corners. 4 sets of 15 shots. Focus on feeling the stick flex.' },
+          name: 'Drive Technique',
+          goodText: 'Powerful, clean drives with excellent weight transfer from back foot to front. The stick contacts the ball at the bottom of the arc with the face square to the target. Your follow-through is smooth and controlled.',
+          improveText: 'Your drives lack power because your backswing is too short and your weight stays on the back foot. Take a fuller backswing, step into the ball with your left foot (for right-handers), and drive through with your hips rotating.',
+          criticalText: 'Drive technique needs a complete rebuild. You are chopping down on the ball rather than sweeping through it. The stick should swing like a pendulum — low backswing, contact at the bottom, full follow-through towards the target. Start with stationary drives.',
+          drill: { name: 'Target Drives', desc: 'Set up a target 20 metres away on the pitch. Drive 30 balls focusing on technique: full backswing, weight transfer onto the front foot, flat stick at contact, follow-through to the target. Track how many hit within 2 metres of the target.' },
         },
         {
-          name: 'Slap Shot',
-          goodText: 'Powerful slap shot with a full wind-up, contact behind the puck, and a complete follow-through. The blade strikes the ice 1-2 inches before the puck, flexing the stick for maximum velocity.',
-          improveText: 'Your slap shot is topping the puck because you are hitting it directly rather than the ice behind it. Aim to contact the ice 1-2 inches behind the puck. This loads the shaft and propels the puck with power.',
-          criticalText: 'The slap shot is not generating power. You are barely winding up and your contact point is wrong. A proper slap shot requires a full backswing to shoulder height, striking the ice behind the puck, and a full follow-through.',
-          drill: { name: 'Slap Shot Ice Contact', desc: 'Place a line of tape on the ice 2 inches behind the puck. Practice hitting that line, not the puck. Let the flex do the work. 4 sets of 10 shots. Start slow and build up to full power as technique improves.' },
+          name: 'Slap Hit',
+          goodText: 'Quick, accurate slap hits with a short backswing that catches defenders off guard. You generate surprising power from minimal wind-up. The ball stays low and hard, ideal for shots inside the circle.',
+          improveText: 'Your slap hit is too similar to a full drive — you are taking too big a backswing, which telegraphs the shot. The slap hit should have almost no backswing. Whip the stick through using wrist and forearm speed only.',
+          criticalText: 'The slap hit has no power or accuracy. You are not using your wrists effectively. Practice the motion without a ball first: hands together at the top of the stick, sharp wrist snap through the hitting zone. Then add a ball from a stationary position.',
+          drill: { name: 'Rapid Slap Hit Drill', desc: 'From the top of the circle, receive a pass and slap hit at goal within 1 second. A feeder sends 20 balls; you must release quickly with accuracy. Track goals scored. Aim for 50%+ on target. 3 rounds.' },
         },
         {
-          name: 'Snap Shot',
-          goodText: 'Quick snap shot release that combines wrist shot technique with slap shot power. Your release is deceptively fast and catches goalies off guard. Excellent for shooting in traffic.',
-          improveText: 'Your snap shot has a good concept but lacks the quick release that makes it effective. The key is a short backswing with maximum wrist snap. The puck should be released before the goalie can set.',
-          criticalText: 'The snap shot is too similar to your wrist shot, offering no advantage. A snap shot requires loading the stick quickly by pressing down and snapping the wrists in one quick motion. It is a short, violent release.',
-          drill: { name: 'Quick Release Drill', desc: 'Receive a pass and release a snap shot within 1 second. A passer feeds you from the side; catch and shoot immediately. 4 sets of 10. Time your release and aim to be under 0.8 seconds from catch to release.' },
+          name: 'Push Pass',
+          goodText: 'Precise, well-weighted push passes executed smoothly without a backswing. You can push accurately over short and medium distances. The ball arrives flat and at the perfect pace for your teammate to receive.',
+          improveText: 'Your push passes lack accuracy at distance because you are flicking your wrists rather than pushing through the ball. Keep the stick on the ball longer — guide it towards the target with a sweeping motion, not a flick.',
+          criticalText: 'Push passes are weak and inaccurate. Your hands are too far apart on the stick, reducing control. Bring your right hand up closer to your left, get low, and sweep the ball towards the target with the stick staying in contact with the ball as long as possible.',
+          drill: { name: 'Push Pass Gates', desc: 'Set up pairs of cones as gates (1 metre wide) at 10, 15, and 20 metres. Push pass through each gate. 10 attempts per distance. Track accuracy percentage. Move to the next distance only when you hit 70%+ at the current one.' },
         },
         {
-          name: 'Shot Accuracy',
-          goodText: 'Pinpoint accuracy, consistently hitting specific corners of the net. You pick your spot early and commit to the target. Your accuracy under pressure matches your practice accuracy.',
-          improveText: 'You are hitting the net but not targeting specific areas. Goalies save shots to the centre of their body. Pick a corner before you shoot: glove side high, stick side low, or the five-hole. Commit to a specific target every shot.',
-          criticalText: 'Accuracy is poor with many shots missing the net entirely. You are sacrificing accuracy for power. Reduce your shot power by 20% and focus entirely on hitting a specific corner. Accuracy first, power second.',
-          drill: { name: 'Four Corners Drill', desc: 'Hang targets in each corner of the net and one five-hole. Take 10 shots at each target from the slot. Track your hit percentage per target. Aim for 60%+ on each target. 3 rounds from different distances.' },
+          name: 'Drag Flick',
+          goodText: 'Devastating drag flick with explosive acceleration from the drag phase into a powerful flick. The ball rises quickly and dips into the corners. Your penalty corner drag flick is a genuine goal-scoring weapon.',
+          improveText: 'Your drag flick lacks power because the drag phase is too short. Pull the ball further across your body before releasing — the longer the drag, the more speed you generate. Also ensure your front knee drives forward as you release.',
+          criticalText: 'The drag flick is not functional yet. The ball is not lifting or is going wildly off target. Break it down: practise the drag without the flick first. Pull the ball 1 metre across your body smoothly. Once consistent, add the flick upward at the end.',
+          drill: { name: 'Drag Flick Progression', desc: 'Phase 1: Drag the ball across body 20 times without flicking. Phase 2: Drag and flick gently at a target 5 metres away, 20 times. Phase 3: Full drag flick at goal from penalty corner distance, 20 attempts. Track height and accuracy.' },
         },
       ],
       passing: [
         {
-          name: 'Tape-to-Tape',
-          goodText: 'Consistently accurate passes that arrive flat on the ice, directly onto your teammate\'s tape. Your passing touch adjusts naturally for distance and your receiver barely needs to move their stick.',
-          improveText: 'Passes are in the general area but not consistently on the tape. The puck is bouncing or arriving off-target by a foot. Focus on cupping the puck on your blade and rolling it off smoothly towards the target\'s stick.',
-          criticalText: 'Passes are regularly off-target, forcing teammates to reach or miss entirely. You are slapping at the puck rather than guiding it. Slow down, cup the puck, and sweep it towards the target. Accuracy over speed.',
-          drill: { name: 'Partner Passing Accuracy', desc: 'With a partner 15 feet apart, pass back and forth aiming to hit a target (a puck or glove) placed on the ice next to their stick. 50 passes each. Track hits. Move farther apart as accuracy improves to 80%+.' },
+          name: 'Flat Pass Accuracy',
+          goodText: 'Consistently accurate flat passes that arrive at the right pace directly onto your teammate\'s stick. You adjust weight naturally for distance and your receiver can control the ball in one touch.',
+          improveText: 'Passes are in the general area but not precise enough for one-touch control. The ball is arriving too fast or too slow. Focus on matching the weight of the pass to the distance — firm over 15 metres, softer under 10 metres.',
+          criticalText: 'Passing accuracy is poor. The ball is regularly off target by a metre or more. You are hitting across the ball rather than through it. Square your body to the target, keep your head down at contact, and follow through towards where you want the ball to go.',
+          drill: { name: 'Partner Passing Precision', desc: 'With a partner 15 metres apart on the pitch, pass back and forth aiming to hit a cone placed next to their stick. 50 passes each. Track hits. Move to 20 metres when you hit 80%+ accuracy.' },
         },
         {
-          name: 'Saucer Pass',
-          goodText: 'Beautiful saucer passes that lift over sticks and land flat just before your teammate. The puck rotates smoothly, giving it a predictable flight path that is easy to receive.',
-          improveText: 'Your saucer passes flip end-over-end rather than rotating flat. Open the blade slightly, scoop under the puck, and spin it off the toe. It should rotate like a frisbee, not tumble like a coin flip.',
-          criticalText: 'Saucer passes are not getting airborne or are wildly inaccurate. This is a technique issue. Place the puck at the heel of the blade, roll it to the toe while opening the face, and release with a wrist roll.',
-          drill: { name: 'Saucer Over Sticks', desc: 'Lay 3 sticks flat on the ice between you and a partner. Saucer pass over all 3 sticks so the puck lands flat on the other side. 4 sets of 15. Increase the gap between sticks as you improve. Track successful completions.' },
+          name: 'Aerial Ball',
+          goodText: 'Excellent aerial passes that clear defenders and land softly for teammates to control. You vary the height and distance accurately, and your aerials are a genuine tactical weapon for switching play.',
+          improveText: 'Your aerial balls are inconsistent in distance — some fall short, others overshoot. The key is getting under the ball with an open stick face and scooping upward. Practice the scoop motion slowly and build up power gradually.',
+          criticalText: 'Aerial passes are not getting sufficient height or accuracy. You are hitting the ball rather than scooping it. Place the stick face under the ball at a 45-degree angle, scoop upward with your arms, and let the ball roll up the face of the stick.',
+          drill: { name: 'Aerial Landing Zones', desc: 'Mark target circles (3-metre radius) at 20, 30, and 40 metres on the pitch. Aerial the ball into each zone. 10 attempts per distance. The ball must land inside the circle. Track accuracy and adjust technique between attempts.' },
         },
         {
-          name: 'One-Touch',
-          goodText: 'Excellent one-touch passing that redirects the puck accurately without stopping it. You read the play early and position your blade to redirect passes to the next player instantly.',
-          improveText: 'Your one-touch passes lose accuracy because your blade angle is not set early enough. Before the puck arrives, position your stick at the angle needed to redirect to the target. Let the puck do the work.',
-          criticalText: 'One-touch passing is very unreliable: the puck either stops on your stick or deflects in the wrong direction. You need to practice receiving and redirecting in one motion. Start with slow feeds.',
-          drill: { name: 'Triangle One-Touch', desc: 'Three players form a triangle 15 feet apart. The puck must move around the triangle using only one-touch passes. No stopping the puck. Continue for 2 minutes, then switch direction. 4 rounds each direction.' },
+          name: 'Reverse Pass',
+          goodText: 'Strong reverse-stick passes that open up new angles and catch defences off guard. You can push and hit accurately off the reverse, adding unpredictability to your distribution.',
+          improveText: 'Your reverse passes lack power because your wrist position is wrong. Rotate the stick so the flat side faces the ball on the reverse side. Keep your left hand firm and use your right wrist to snap through the ball.',
+          criticalText: 'Reverse passing is very weak and inaccurate. You are avoiding the reverse side entirely, making you predictable. Start with stationary reverse push passes over 5 metres. Get comfortable with the grip and wrist position before adding distance.',
+          drill: { name: 'Reverse Pass Drill', desc: 'Stand with the ball on your reverse side. Push pass to a partner 10 metres away using only the reverse stick. 30 passes each. Then add movement: jog and reverse pass on the move. 20 reps. Track accuracy at each stage.' },
         },
         {
-          name: 'Breakout Passing',
-          goodText: 'Smart, accurate breakout passes under pressure. You select the right option: up the boards, through the middle, or off the glass, and execute with pace. Your breakout starts effective transitions.',
-          improveText: 'Breakout passes are hesitant, giving forecheckers time to close lanes. Make your decision quickly: look up, identify the open lane, and pass with authority. A firm, early pass is better than a perfect late one.',
-          criticalText: 'Breakout passing is a liability. You are either icing the puck, turning it over, or holding it too long. Develop a decision framework: first look up the middle, then the strong side boards, then reverse behind the net.',
-          drill: { name: 'Breakout Under Pressure', desc: 'A forechecker attacks as you retrieve the puck behind your net. Identify the open breakout pass (boards, middle, or reverse) and execute. A coach assigns the passing lane by positioning a receiver. 3 sets of 10 breakouts.' },
+          name: 'Through Ball',
+          goodText: 'Perfectly weighted through balls that split the defence and arrive in space for a teammate running onto them. Your timing and vision combine to create dangerous attacking opportunities.',
+          improveText: 'Your through balls are either too heavy (running through to the goalkeeper) or too soft (intercepted by defenders). The ball needs to arrive in the space just as your teammate reaches it. Watch their run and time the release.',
+          criticalText: 'Through passing is not effective. You are passing to where your teammate is, not where they will be. Look for the run first, then play the ball into the space ahead of them. A through ball should always be played forward into space.',
+          drill: { name: 'Through Ball Timing', desc: 'A runner starts at the 25-yard line and sprints towards the circle. From midfield, play a through ball into the space ahead of them so they receive it inside the circle. 4 sets of 8 reps. Track how many arrive perfectly timed.' },
         },
       ],
-      checking: [
+      defending: [
         {
-          name: 'Body Position',
-          goodText: 'Excellent body position for contact: low centre of gravity, wide base, knees bent, and core engaged. You absorb and deliver hits effectively without losing balance or puck position.',
-          improveText: 'You are too upright when initiating or receiving contact, which allows opponents to knock you off the puck. Get lower, bend your knees more, and widen your base before engaging in any physical play.',
-          criticalText: 'Very poor body position for physical play. You are standing tall and getting knocked off the puck easily. Lower your centre of gravity dramatically: deep knee bend, core tight, feet wider than shoulder-width.',
-          drill: { name: 'Battle Stance Drill', desc: 'In pairs, face each other in a low stance on the ice. On the whistle, attempt to push the other player out of a 3-metre circle using only body position. No grabbing. 10 rounds of 10 seconds each. Focus on staying low.' },
+          name: 'Jockeying',
+          goodText: 'Excellent jockeying technique that delays attackers and forces them into weaker positions. You stay low, balanced, and patient, waiting for the right moment to make a tackle. You never dive in recklessly.',
+          improveText: 'You are jockeying too passively, giving the attacker too much time. Close the gap faster and force them onto their reverse stick side. Stay side-on with your stick low and your weight on your toes, ready to react.',
+          criticalText: 'Jockeying is non-existent. You are either diving in immediately (getting beaten) or standing off too far (giving free entry to the circle). Stay one stick-length away, mirror the attacker\'s movements, and force them wide. Be patient.',
+          drill: { name: 'Channelling Drill', desc: 'An attacker dribbles from the 25-yard line towards goal. Your job is to jockey and force them to the sideline without tackling. Coach scores you on how far wide you push them. 3 sets of 10 reps. No tackling — positioning only.' },
         },
         {
-          name: 'Timing',
-          goodText: 'Perfectly timed checks that separate the opponent from the puck at the moment of vulnerability. You read the play and time your contact for maximum effectiveness within the rules.',
-          improveText: 'Your checks are slightly early or late, reducing effectiveness or causing penalties. Watch for the moment the puck carrier looks down or commits to a move, then initiate contact at that split second.',
-          criticalText: 'Check timing is very poor: you are either arriving too early (interference penalties) or too late (the puck is already gone). Focus on reading the puck carrier\'s body language to predict when they are most vulnerable.',
-          drill: { name: 'Read and React Checking', desc: 'An offensive player skates through the neutral zone with the puck. You must time your check for the moment they look down at the puck or commit to a lane. Coach evaluates timing. 3 sets of 8 repetitions.' },
+          name: 'Block Tackle',
+          goodText: 'Strong, clean block tackles timed perfectly to dispossess the attacker. You get your body low, stick flat on the ground, and block the ball cleanly without fouling. Excellent at winning the ball in one-on-one situations.',
+          improveText: 'Your block tackles are mistimed — you are going in too early and the attacker drags past you. Wait for them to push the ball, then step in with your stick flat on the ground. The tackle should meet the ball, not chase it.',
+          criticalText: 'Block tackling is very weak. You are stabbing at the ball rather than blocking it. Get your whole body behind the tackle: low stance, stick flat and firm on the turf, left foot forward. The stick must form a solid wall that the ball hits.',
+          drill: { name: 'Block Tackle Timing', desc: 'An attacker approaches at pace. You must time a block tackle at the moment they push the ball forward. Coach signals when to commit. 4 sets of 10 reps. Focus on getting low and placing the stick flat on the turf before contact.' },
         },
         {
-          name: 'Stick Checking',
-          goodText: 'Active, disruptive stick that lifts, pokes, and sweeps effectively. You separate players from the puck with your stick without taking penalties. Your stick is always in a passing or shooting lane.',
-          improveText: 'Your stick checks are predictable. You default to the poke check when a lift or sweep would be more effective. Vary your stick checking: lift the stick on the forecheck, poke in the neutral zone, and sweep in the defensive zone.',
-          criticalText: 'Stick checking is ineffective. You are reaching and slashing rather than using controlled checking motions. A proper poke check is a quick jab at the puck, not a sweeping hack. Keep your stick on the ice in passing lanes.',
-          drill: { name: 'Stick Check Gauntlet', desc: 'A puck carrier skates through a 3-metre wide channel. You stand at the edge and attempt to dislodge the puck using only stick checks (poke, lift, sweep). No body contact. 4 sets of 10. Track successful puck separations.' },
+          name: 'Marking',
+          goodText: 'Tight, intelligent marking that denies attackers space and passing options. You stay goal-side, ball-side, and within touching distance. You intercept passes and cut off dangerous runs before they develop.',
+          improveText: 'Your marking is too loose. You let attackers receive the ball and turn unchallenged. Get tighter: stay within one arm\'s length, stay goal-side, and watch the ball not the attacker. Step in front to intercept when the pass is played.',
+          criticalText: 'Marking is a major weakness. You lose your player regularly, leaving them free in the circle. Always know where your mark is. Stay goal-side (between them and the goal) and ball-side (between them and the ball). Never turn your back on the ball.',
+          drill: { name: 'Shadow Marking Drill', desc: 'An attacker moves freely inside the circle for 30 seconds. You must stay within arm\'s length at all times while remaining goal-side. A coach scores you on positioning every 5 seconds. 10 rounds. Track your average score.' },
         },
         {
-          name: 'Gap Control',
-          goodText: 'Outstanding gap control, maintaining the perfect distance from the puck carrier to force a play without giving up the blue line. You dictate the tempo by controlling the space between you and the attacker.',
-          improveText: 'Your gap is either too tight (easy to beat with speed) or too loose (giving too much time and space). Maintain roughly one stick-length distance, skating backwards at the attacker\'s speed, and close at the blue line.',
-          criticalText: 'Gap control is non-existent: you are either standing still at the blue line or backing up into your own zone. You must skate backwards towards the attacker, matching their speed, and tighten the gap at the defensive blue line.',
-          drill: { name: 'Gap Control 1-on-1', desc: 'A forward attacks from centre ice. You start at the blue line and must maintain a one-stick-length gap while skating backwards. At the far blue line, close the gap and engage. 3 sets of 8 repetitions. Coach evaluates gap distance.' },
+          name: 'Interceptions',
+          goodText: 'Excellent anticipation and reading of the game allows you to intercept passes consistently. You step into passing lanes at the right moment, winning the ball and starting counter-attacks.',
+          improveText: 'You see the pass coming but react too late to intercept. The key is to move before the ball is released — read the passer\'s body shape and stick angle to predict where the ball will go, then commit early.',
+          criticalText: 'Interceptions are rare because you are ball-watching rather than reading the play. Study the passer\'s hips and stick position — they telegraph the direction. Position yourself in the most likely passing lane and move forward as they release.',
+          drill: { name: 'Interception Game', desc: 'Two attackers pass between each other while moving up the pitch. You start between them and must intercept as many passes as possible. 2-minute rounds, 6 rounds. Track interceptions per round. Aim for 3+ per round.' },
         },
       ],
     },
 
     warmup(level) {
       const base = [
-        'Easy skating laps: 3 laps forward, 2 laps backward',
-        'Dynamic stretches on the bench: leg swings, hip circles, arm circles',
-        'Puck handling warm-up: easy stickhandling while skating (3 min)',
+        'Easy jog around the pitch: 2 laps with dynamic stretches on the sidelines',
+        'Ball carrying at half pace: Indian dribble the length of the pitch',
+        'Partner passing warm-up: push passes at 10 metres, 3 min',
       ];
       if (level !== 'beginner') {
-        base.push('Crossover and edge work around face-off circles (3 min)');
-        base.push('Passing in pairs at half speed (3 min)');
+        base.push('Lateral shuffles and direction changes with stick and ball (3 min)');
+        base.push('Hit-and-receive drill in pairs: drives at 20 metres, 3 min');
       }
       if (level === 'advanced' || level === 'elite') {
-        base.push('Quick-feet agility drill through cones (3 min)');
+        base.push('Small-sided 4v4 possession game to warm up game awareness (5 min)');
       }
       return base;
     },
 
     sessions: {
-      skating(level, weakAreas) {
+      dribbling(level, weakAreas) {
         const exercises = [];
         if (level === 'beginner') {
-          exercises.push('Forward skating: focus on knee bend and full extension, 6 laps');
-          exercises.push('Snowplow stops on both sides: 10 reps each');
-          exercises.push('Two-foot glides and basic crossovers around circles: 10 min');
+          exercises.push('Indian dribble through cones: 10 trips at walking pace');
+          exercises.push('Close control receiving: partner feeds from 5 metres, 20 receptions');
+          exercises.push('Speed carry: push and run the length of the pitch, 6 sprints');
         } else if (level === 'intermediate') {
-          exercises.push('Power skating: full stride with emphasis on extension, 8 laps');
-          exercises.push('Hockey stops and crossover starts: 10 reps each side');
-          exercises.push('Tight turn agility around cones: 8 runs');
+          exercises.push('Indian dribble at jogging pace through a tight cone slalom: 8 trips');
+          exercises.push('1-on-1 elimination moves against a passive defender: 10 reps');
+          exercises.push('Close control under pressure: keep possession in a 3x3 metre box, 8 rounds');
         } else if (level === 'advanced') {
-          exercises.push('Sprint skating: 5x blue-line-to-blue-line at 100%');
-          exercises.push('Transition skating: forward to backward pivots at speed, 12 reps');
-          exercises.push('Lateral agility course with stops, starts, and crossovers');
+          exercises.push('Full-speed dribbling through a pitch-length obstacle course');
+          exercises.push('1-on-1 elimination against a live defender into the circle: 10 reps');
+          exercises.push('Carrying under pressure with two defenders channelling you: 8 reps');
         } else {
-          exercises.push('Overspeed skating with resistance band release: 8 sprints');
-          exercises.push('Full-ice agility course simulating game situations');
-          exercises.push('Backward skating race-pace drill with pivots: 6 reps');
+          exercises.push('Game-speed dribbling circuit: 5 stations simulating match situations');
+          exercises.push('Advanced elimination combinations against live defenders');
+          exercises.push('Dribbling under fatigue: close control drills after sprint intervals');
         }
         if (weakAreas && weakAreas.length > 0) {
           exercises.push('Focus: ' + weakAreas[0].aspect + ' correction drill');
         }
-        return { title: 'Skating Session', exercises };
+        return { title: 'Dribbling Session', exercises };
       },
-      shooting(level, weakAreas) {
+      hitting(level, weakAreas) {
         const exercises = [];
         if (level === 'beginner') {
-          exercises.push('Stationary wrist shots from the slot: 30 shots');
-          exercises.push('Forehand and backhand shots from close range: 15 each');
-          exercises.push('Target shooting: aim at each corner, 10 per corner');
+          exercises.push('Stationary drives at a target 15 metres away: 30 hits');
+          exercises.push('Push passes in pairs at 10 metres: 30 each');
+          exercises.push('Slap hits from the top of the circle at goal: 20 shots');
         } else if (level === 'intermediate') {
-          exercises.push('Wrist shots in stride from the hash marks: 20 shots');
-          exercises.push('Slap shot from the point: 15 shots focusing on technique');
-          exercises.push('Snap shot quick release off a pass: 15 reps');
+          exercises.push('Drives on the move: receive and hit first time, 20 reps');
+          exercises.push('Slap hit from the circle edge off a penalty corner: 15 shots');
+          exercises.push('Push pass accuracy through gates at 15 metres: 20 reps');
         } else if (level === 'advanced') {
-          exercises.push('Shooting off the rush: 3 shots from different angles, 5 sequences');
-          exercises.push('One-timer drill from a cross-ice pass: 15 reps');
-          exercises.push('Shooting through traffic with a screen: 15 shots');
+          exercises.push('Drag flick from penalty corner set piece: 20 attempts at goal');
+          exercises.push('Shooting under pressure: receive inside the circle with a defender, 15 reps');
+          exercises.push('Reverse-stick shots from close range: 15 shots');
         } else {
-          exercises.push('Game-speed shooting circuit: 5 stations, rapid fire');
-          exercises.push('Shooting under pressure with a closing defender');
-          exercises.push('Deke and shoot: 1-on-0 with a move and finish, 10 reps');
+          exercises.push('Penalty corner drag flick variation: top corner, low corner, 10 each');
+          exercises.push('One-touch deflections at goal from crosses: 15 reps');
+          exercises.push('Shooting circuit: 5 stations around the circle, rapid fire, 3 rounds');
         }
         if (weakAreas && weakAreas.length > 0) {
           exercises.push('Focus: ' + weakAreas[0].aspect + ' correction work');
         }
-        return { title: 'Shooting Session', exercises };
+        return { title: 'Hitting Session', exercises };
       },
       passing(level, weakAreas) {
         const exercises = [];
         if (level === 'beginner') {
-          exercises.push('Partner passing: forehand and backhand, 30 each');
-          exercises.push('Pass and receive on the move: skating in a circle, 5 min');
-          exercises.push('Target passing: hit a stick or puck on the ice from 15 feet');
+          exercises.push('Partner push passes at 10 metres: 30 each side');
+          exercises.push('Flat pass and receive on the move: jogging in pairs, 5 min');
+          exercises.push('Target passing: hit a cone from 15 metres, 20 reps');
         } else if (level === 'intermediate') {
-          exercises.push('Saucer pass over sticks: 20 reps');
-          exercises.push('One-touch passing in a triangle: 5 min each direction');
-          exercises.push('Tape-to-tape passing on the move: 2-on-0 rushes, 8 trips');
+          exercises.push('Aerial ball practice: scoop to a target zone 20 metres away, 15 reps');
+          exercises.push('Reverse-stick passing in pairs at 10 metres: 20 reps');
+          exercises.push('Through ball timing: pass into space for a running teammate, 12 reps');
         } else if (level === 'advanced') {
-          exercises.push('Breakout passing under forechecking pressure: 12 reps');
-          exercises.push('Cross-ice pass to a one-timer: 15 reps');
-          exercises.push('Bank passes off the boards: 15 reps each side');
+          exercises.push('Switching play: cross-field aerial to the opposite wing, 12 reps');
+          exercises.push('Passing under pressing pressure: keep possession in a 4v2, 5 min');
+          exercises.push('Disguised passes: sell one direction, pass another, 15 reps');
         } else {
-          exercises.push('Full-speed transition passing: 3-on-2 rush, 10 reps');
-          exercises.push('Passing in traffic: maintain possession in 3-on-3 tight area');
-          exercises.push('Blind pass and no-look plays: advanced reads, 10 min');
+          exercises.push('Full-speed passing patterns: 5-player sequence ending in a circle entry');
+          exercises.push('Passing in tight spaces: 5v5 possession in a 20x20 metre area');
+          exercises.push('Match-specific set plays from free hits and sidelines: 10 reps each');
         }
         if (weakAreas && weakAreas.length > 0) {
           exercises.push('Focus: ' + weakAreas[0].aspect + ' specific passing drill');
         }
         return { title: 'Passing Session', exercises };
       },
-      checking(level, weakAreas) {
+      defending(level, weakAreas) {
         const exercises = [];
         if (level === 'beginner') {
-          exercises.push('Angling and body position: guide attacker to the boards, 10 reps');
-          exercises.push('Stick checking basics: poke check at a stationary target, 20 reps');
-          exercises.push('Puck protection in a small area: 1-on-1 battles, 10 rounds');
+          exercises.push('Jockeying practice: delay the attacker without tackling, 10 reps');
+          exercises.push('Block tackle technique on a stationary ball: 20 reps');
+          exercises.push('Marking drill: stay goal-side of a walking attacker, 10 rounds of 30 sec');
         } else if (level === 'intermediate') {
-          exercises.push('Controlled body checking technique against pads: 10 reps');
-          exercises.push('Gap control drill: maintain distance while skating backward, 10 reps');
-          exercises.push('Stick lift and poke check on a moving target: 12 reps');
+          exercises.push('Channelling drill: force attacker to the sideline, 10 reps');
+          exercises.push('Block tackle timing against a moving attacker: 12 reps');
+          exercises.push('Interception game: read and cut passing lanes, 6 x 2-min rounds');
         } else if (level === 'advanced') {
-          exercises.push('Live 1-on-1 checking along the boards: 10 reps');
-          exercises.push('Pinching and sealing off forwards: 8 game-situation reps');
-          exercises.push('Net-front battle: box out and clear rebounds, 10 reps');
+          exercises.push('Live 1-on-1 defending from the 25-yard line to the circle: 10 reps');
+          exercises.push('Penalty corner defence: runner and injection practice, 12 reps');
+          exercises.push('Recovery defending: start behind the attacker and recover, 8 reps');
         } else {
-          exercises.push('Full-speed open-ice checking with proper angle and timing');
-          exercises.push('Board battle dominance: 2-on-2 along the wall, 8 reps');
-          exercises.push('Checking under fatigue: physical play after skating sprints');
+          exercises.push('Full-match-intensity 2-on-2 defending in the circle');
+          exercises.push('Press and trap defensive system practice: 10 team reps');
+          exercises.push('Defending under fatigue: tackle drills after sprint shuttles');
         }
         if (weakAreas && weakAreas.length > 0) {
-          exercises.push('Focus: ' + weakAreas[0].aspect + ' specific checking drill');
+          exercises.push('Focus: ' + weakAreas[0].aspect + ' specific defending drill');
         }
-        return { title: 'Checking Session', exercises };
+        return { title: 'Defending Session', exercises };
       },
     },
 
     fitness(level) {
       if (level === 'beginner') {
-        return { title: 'Hockey Fitness', exercises: [
-          'Off-ice skating stride simulation: lateral lunges 3x 10 each side',
+        return { title: 'Field Hockey Fitness', exercises: [
+          'Interval running: jog 200m, sprint 50m, repeat 6 times',
           'Core stability: 3x 30-second planks and side planks',
-          'Bodyweight squats: 3x 15',
-          'Shuttle runs: 6x 20m for anaerobic conditioning',
+          'Bodyweight squats and lunges: 3x 15 each',
+          'Shuttle runs: 6x 25m for change-of-direction conditioning',
         ]};
       } else if (level === 'intermediate') {
-        return { title: 'Hockey Fitness', exercises: [
-          'Lateral bounds: 4x 10 each direction',
-          'Single-leg deadlifts: 3x 10 each leg',
-          'Core rotational exercises: Russian twists and wood chops, 3x 12',
-          'Interval sprints: 8x 30m with 30-second rest',
+        return { title: 'Field Hockey Fitness', exercises: [
+          'Fartlek run: 20 minutes alternating pace on the pitch',
+          'Single-leg squats and deadlifts: 3x 10 each leg',
+          'Agility ladder footwork: 4x through the full ladder',
+          'Repeated sprint ability: 10x 30m sprints with 20-second rest',
         ]};
       } else {
-        return { title: 'Hockey Fitness', exercises: [
-          'Slide board training: 4x 45-second intervals',
-          'Heavy squats and deadlifts: 4x 6 at 80% 1RM',
-          'Plyometric box jumps and lateral hops: 4x 8',
-          'Battle rope and medicine ball circuit: 4 exercises x 30 seconds',
-          'Anaerobic capacity test: 10x 40m sprints with 30-second recovery',
+        return { title: 'Field Hockey Fitness', exercises: [
+          'High-intensity interval training: 8x 400m at 90% effort with 60-second rest',
+          'Power cleans and front squats: 4x 6 at 80% 1RM',
+          'Plyometric bounds and lateral hops: 4x 8 each direction',
+          'Yo-Yo intermittent recovery test: full test protocol',
+          'Match-simulation running: 4x 5-min blocks of mixed sprints, jogs, and walks',
+        ]};
+      }
+    },
+  },
+
+  // ============================================================
+  // VOLLEYBALL
+  // ============================================================
+  volleyball: {
+    name: 'Volleyball',
+    icon: '\u{1F3D0}',
+    color: '#FF5722',
+    roles: [
+      { id: 'setter', name: 'Setter' },
+      { id: 'outside-hitter', name: 'Outside Hitter' },
+      { id: 'middle-blocker', name: 'Middle Blocker' },
+      { id: 'opposite-hitter', name: 'Opposite Hitter' },
+      { id: 'libero', name: 'Libero' },
+      { id: 'defensive-specialist', name: 'Defensive Specialist' },
+    ],
+    analysisTypes: [
+      { id: 'serving', name: 'Serving', icon: '\u{1F3D0}' },
+      { id: 'spiking', name: 'Spiking', icon: '\u{1F4A5}' },
+      { id: 'passing', name: 'Passing & Receiving', icon: '\u{1F932}' },
+      { id: 'blocking', name: 'Blocking', icon: '\u{1F6E1}\uFE0F' },
+    ],
+    levels: [
+      { id: 'beginner', name: 'Beginner' },
+      { id: 'intermediate', name: 'Intermediate' },
+      { id: 'advanced', name: 'Advanced' },
+      { id: 'elite', name: 'Elite' },
+    ],
+    aspects: {
+      serving: [
+        {
+          name: 'Toss Consistency',
+          goodText: 'Your toss is highly consistent: the ball reaches the same height and placement every time, landing in your hitting window without drift. This repeatability is the foundation of a reliable serve.',
+          improveText: 'Your toss is inconsistent in height or placement, drifting left, right, or behind you. Focus on releasing the ball from a still hand at shoulder height, using your fingertips with minimal spin. The toss should peak at roughly 2-3 feet above your full reach.',
+          criticalText: 'Your toss is erratic, forcing you to adjust your approach and contact on nearly every serve. You are compensating with arm angle, which kills accuracy. Stop and rebuild: practice the toss alone until 8 out of 10 land on a target on the floor without you swinging.',
+          drill: { name: 'Target Toss Drill', desc: 'Place a towel on the floor at your ideal contact point. Toss the ball 30 times without swinging, letting it bounce. Track how many land on the towel. Aim for 25 out of 30 before adding the swing. 3 sets.' },
+        },
+        {
+          name: 'Contact Point',
+          goodText: 'Excellent contact point: you are striking the ball at full arm extension with a firm, open hand directly behind the centre-back of the ball. This produces a clean, powerful serve with controlled trajectory.',
+          improveText: 'Your contact point is slightly low or off-centre, causing the ball to float unpredictably or spray wide. Reach high and strike through the midline of the ball with the heel of your hand, snapping your wrist over the top for topspin.',
+          criticalText: 'You are contacting the ball with a floppy wrist or hitting the underside, producing weak, high-arcing serves that are easy to pass. Lock your wrist, reach to full extension, and drive through the ball with the heel of your hand.',
+          drill: { name: 'Wall Contact Drill', desc: 'Stand 3 metres from a wall. Toss and hit the ball into the wall at head height, focusing only on a clean contact with a locked wrist at full reach. 4 sets of 20 contacts. Film from the side to check arm extension.' },
+        },
+        {
+          name: 'Serve Placement',
+          goodText: 'Outstanding serve placement: you consistently target the deep corners, short zones, and seams between passers. You vary your targets based on the opponent\'s weaknesses and rotation.',
+          improveText: 'Your serves land in the middle of the court too often, giving passers an easy read. Start aiming for specific zones: deep corner zone 1, short zone 5, or the seam between two receivers. Use cones or towels as targets in practice.',
+          criticalText: 'Serve placement is random with no tactical intent. You are simply hitting the ball over the net and hoping for the best. Develop a serving plan: identify 3 target zones and practice hitting each one 10 times before moving to the next.',
+          drill: { name: 'Zone Serving', desc: 'Divide the opposite court into 6 zones with cones. Serve 10 balls to each zone in sequence. Record your accuracy percentage for each zone. Repeat 3 rounds, aiming for 60% accuracy in each zone.' },
+        },
+        {
+          name: 'Jump Serve Mechanics',
+          goodText: 'Powerful, well-coordinated jump serve: your approach timing, toss, and contact are synchronised. You are generating excellent height and topspin, making the ball drop aggressively into the court.',
+          improveText: 'Your jump serve approach is mistimed: you are either arriving too early (waiting for the ball) or too late (reaching behind you). Toss the ball slightly forward and higher, and use a consistent 3-step approach: left-right-left for right-handers.',
+          criticalText: 'Your jump serve is breaking down completely. The toss, approach, and contact are disconnected. Simplify: master a standing topspin serve first, then add one step, then two, then the full approach. Do not rush this progression.',
+          drill: { name: 'Progressive Jump Serve', desc: 'Stage 1: standing topspin serve, 15 reps. Stage 2: one-step approach serve, 15 reps. Stage 3: full 3-step approach serve, 15 reps. Only advance to the next stage when 10 of 15 land in-court. 2 full progressions per session.' },
+        },
+      ],
+      spiking: [
+        {
+          name: 'Approach Footwork',
+          goodText: 'Explosive, well-timed approach with a fast last two steps generating maximum vertical jump. Your left-right-left (right-hander) pattern is automatic, and you convert horizontal speed into vertical lift efficiently.',
+          improveText: 'Your approach is either too slow or your steps are the wrong length. The final two steps should be the fastest and longest, with a strong heel-to-toe plant to transfer momentum upward. Focus on accelerating through the approach.',
+          criticalText: 'Your approach footwork is fundamentally incorrect: you are jumping off the wrong foot or taking inconsistent steps. This robs you of power and timing. Go back to basics: practice the 3-step approach without a ball, 50 reps per session, until it is automatic.',
+          drill: { name: 'Approach Lines Drill', desc: 'Tape 3 footprint markers on the floor for your approach steps. Practice the approach and jump 20 times, hitting each marker. Then remove the markers and repeat 20 more from memory. 3 sets with 90-second rest.' },
+        },
+        {
+          name: 'Arm Swing',
+          goodText: 'Full, fast arm swing with both arms loading behind you on the jump and the hitting arm whipping through a high contact point. You are generating excellent power through a full kinetic chain from hips to hand.',
+          improveText: 'Your arm swing is abbreviated: you are not drawing both arms back fully, which reduces your power and jump height. Load both arms behind you during takeoff, then drive your non-hitting arm down as your hitting arm swings up and through the ball.',
+          criticalText: 'Your arm swing is mostly from the elbow with no shoulder rotation or torso engagement. You are pushing the ball rather than hitting through it. Focus on opening your chest to the antenna, then rotating your torso and shoulder through the ball explosively.',
+          drill: { name: 'Bow and Arrow Hitting', desc: 'Stand on a box at the net. A partner tosses to you. Focus on drawing your hitting arm back like pulling a bowstring, chest open to the antenna, then snapping through the ball. 4 sets of 12 swings. Film to check full rotation.' },
+        },
+        {
+          name: 'Timing with Set',
+          goodText: 'Excellent timing: you read the set trajectory early and adjust your approach speed accordingly. You arrive at the ball at the peak of your jump with your arm fully loaded, giving you maximum options.',
+          improveText: 'Your timing is slightly off: you are either under the ball (too early) or reaching behind you (too late). For a high outside set, start your approach when the ball reaches its peak. For a faster set, start earlier. Practice reading the setter\'s hands.',
+          criticalText: 'Your timing is very poor, resulting in mis-hits, tips, or swings into the net. You are not reading the set at all. Work with your setter to establish a verbal or visual cue, and practice the same set-and-hit sequence 50 times until the timing becomes instinctive.',
+          drill: { name: 'Repetition Hitting', desc: 'A setter delivers 40 identical high-outside sets. Hit each one focusing only on the timing of your approach. Do not vary your shot: just hit cross-court. Track how many you contact at the peak of your jump. Aim for 30 of 40.' },
+        },
+        {
+          name: 'Shot Selection',
+          goodText: 'Intelligent shot selection: you read the block and defence before committing to your swing. You have a reliable cross-court, line, and tip in your arsenal and vary them based on what the defence gives you.',
+          improveText: 'You default to one shot (usually hard cross-court) regardless of the block. Start reading the blocker\'s hands: if they seal the line, hit cross; if they overcommit cross, wipe off their outside hand or hit line. Add a tip to keep the defence honest.',
+          criticalText: 'You have no shot variation: every swing is the same, making you predictable and easy to defend. Develop at least 3 shots: hard cross-court, sharp line, and a roll shot or tip over the block. Drill each one individually before combining.',
+          drill: { name: 'Read and React Hitting', desc: 'A coach stands on a box at the net holding a block board. Before each set, the coach positions the board to take away one shot. You must read the board and hit the open shot. 4 sets of 10 swings. Track correct reads.' },
+        },
+      ],
+      passing: [
+        {
+          name: 'Platform Angle',
+          goodText: 'Excellent platform: your forearms are flat, together, and angled precisely to direct the ball to the setter\'s target. You adjust your platform angle smoothly for serves coming from different directions.',
+          improveText: 'Your platform angle is inconsistent, causing the ball to fly too high or too far off the net. Lock your wrists together, straighten your elbows, and angle your platform by bending at the knees and waist rather than swinging your arms.',
+          criticalText: 'Your platform is broken: wrists are apart, elbows are bent, and you are swinging your arms at the ball. This produces uncontrollable passes. Press your hands together, lock your elbows, and absorb the ball by bending your knees. No arm swing.',
+          drill: { name: 'Wall Passing for Platform', desc: 'Stand 3 metres from a wall. Pass the ball against the wall continuously, keeping your platform flat and using only leg movement to control the angle. 4 sets of 40 consecutive passes. If the ball drops, restart the count.' },
+        },
+        {
+          name: 'Movement to Ball',
+          goodText: 'Outstanding movement: you read the serve early, take quick shuffle steps to get behind the ball, and arrive balanced with your platform set before contact. You make passing look effortless.',
+          improveText: 'You are reaching for the ball instead of moving your feet. Take quick, small shuffle steps to get your midline behind the ball before it arrives. Your feet should stop and be set before contact, not still moving.',
+          criticalText: 'You are consistently late to the ball, forcing you to lunge or pass off to the side. Your first step is too slow. Work on your ready position (low, weight forward) and react to the server\'s contact, not the ball\'s flight.',
+          drill: { name: 'Reaction Passing', desc: 'A server stands at the net and hits balls randomly to your left and right. You start in the middle in a ready position. Move, set your feet, and pass to target. 4 sets of 12 passes. A partner tracks how many times your feet were set before contact.' },
+        },
+        {
+          name: 'First Contact Quality',
+          goodText: 'Consistently high-quality first contacts: the ball arrives to the setter at the perfect height and distance from the net, giving them every option. Your passing percentage to the target zone is excellent.',
+          improveText: 'Your first contact is too tight to the net or too far off, limiting the setter\'s options. Aim for a pass that peaks at antenna height and lands 1-2 feet from the net at the right-side target. Use your legs to control the distance.',
+          criticalText: 'First contact quality is very poor: passes are hitting the net, flying over the setter, or landing in the middle of the court. Simplify your goal: just get the ball high and to the right-front quarter of the court. Accuracy will improve with repetition.',
+          drill: { name: 'Target Passing', desc: 'Place a basket or hoop at the setter\'s position, 1 foot off the net. A server serves from across the net. Pass 30 balls aiming to land in or touch the target. Track your percentage. 3 rounds, aiming for 50% accuracy.' },
+        },
+        {
+          name: 'Serve Receive Formation',
+          goodText: 'Excellent understanding of serve receive formations: you know your zone responsibilities, communicate well with teammates, and adjust your positioning based on the server\'s tendencies and your rotation.',
+          improveText: 'You are unsure of your zone boundaries, leading to confusion with adjacent passers. Review your team\'s serve receive formation for each rotation. Know who has the seam ball, and call "mine" or "yours" early and loudly.',
+          criticalText: 'You are out of position in serve receive, leaving gaps or overlapping with teammates. This causes miscommunication and free balls for the opponent. Study the formation diagrams for each rotation and walk through them before every practice.',
+          drill: { name: 'Formation Walk-Through', desc: 'With your full serve-receive unit, walk through all 6 rotations without a ball. Call out zone responsibilities for each rotation. Then add a server and pass 10 balls in each rotation. Rotate after each round. Full cycle takes 60 balls.' },
+        },
+      ],
+      blocking: [
+        {
+          name: 'Footwork & Positioning',
+          goodText: 'Quick, efficient footwork to get in front of the hitter every time. You use a clean slide step or crossover step to close the block and arrive squared to the net with balanced feet.',
+          improveText: 'Your footwork to the point of attack is slow, leaving gaps in the block. Use a quick shuffle for short distances and a crossover step for longer moves. Always finish with both feet square to the net before jumping.',
+          criticalText: 'Your block footwork is very poor: you are turning your body sideways to move, drifting away from the net, or not getting to the pin at all. Drill the slide step and crossover step without jumping, 50 reps each, until the movement is automatic.',
+          drill: { name: 'Block Footwork Shuttle', desc: 'Start at the middle of the net. Slide step to the left pin, block jump, slide back to the middle, then crossover step to the right pin and block jump. 4 sets of 8 full trips (middle-left-middle-right). Rest 60 seconds between sets.' },
+        },
+        {
+          name: 'Hand Placement',
+          goodText: 'Excellent hand placement over the net: your hands are firm, spread wide, angled into the opponent\'s court, and pressing over the tape. You consistently take away the hitter\'s best shot.',
+          improveText: 'Your hands are too soft or angled backward, causing the ball to deflect off your hands and out of play. Reach over the net aggressively with firm, wide hands, fingers spread, and angle your palms toward the opponent\'s court.',
+          criticalText: 'Your hands are not penetrating over the net at all. You are jumping and putting your hands straight up, which lets the ball fly between your hands and the net or off your fingertips out of bounds. Reach forward and press over the tape.',
+          drill: { name: 'Net Press Drill', desc: 'Stand on a box at the net. A partner on the other side tosses the ball at your hands. Press over the net and block the ball down into their court. Focus on firm hands angled inward. 4 sets of 15 reps. Track how many you block down versus deflect backward.' },
+        },
+        {
+          name: 'Timing the Jump',
+          goodText: 'Your block timing is excellent: you jump after the hitter to match their peak contact and are at maximum height when the ball is struck. This makes your block a wall rather than a speed bump.',
+          improveText: 'You are jumping too early and coming down before the hitter contacts the ball, or too late and getting tooled. Watch the hitter\'s approach and jump just after they leave the ground. For a quick attack, jump with the setter.',
+          criticalText: 'Your block timing is completely off. You are jumping before the set even arrives or after the ball has already passed you. Focus on one cue: watch the hitter\'s arm. When their arm starts to swing forward, you should already be at peak height.',
+          drill: { name: 'Hitter Tracking Drill', desc: 'A hitter attacks from the opposite side. You focus only on timing: jump to match the hitter and attempt to block. Do not worry about hand placement yet. 4 sets of 10 block attempts. A partner calls "early", "perfect", or "late" for each jump.' },
+        },
+        {
+          name: 'Reading the Hitter',
+          goodText: 'Outstanding ability to read the hitter: you identify their approach angle, body position, and arm angle to predict where the attack will go. You adjust your block position accordingly, shutting down their best option.',
+          improveText: 'You are guessing rather than reading. Study the hitter\'s approach angle: if they approach from outside, they will likely hit cross-court. If their shoulder opens to the line, expect a line shot. Watch their eyes and hitting arm for cues.',
+          criticalText: 'You are not reading the hitter at all and are just jumping straight up and hoping. This makes your block random and easy to exploit. Start with one cue: watch the hitter\'s approach angle. If they come from the left, set your block to take away cross-court.',
+          drill: { name: 'Video Read Drill', desc: 'Watch 20 clips of hitters attacking. Pause before contact and predict cross-court, line, or tip. Then watch the result. Track your read accuracy. Supplement with live practice: 3 sets of 10 block attempts focusing only on reading the approach angle.' },
+        },
+      ],
+    },
+
+    warmup(level) {
+      const base = [
+        'Light jogging and dynamic stretches: high knees, butt kicks, arm circles (3 min)',
+        'Pepper drill in pairs: bump-set-hit at half speed (3 min)',
+        'Individual ball-handling: setting to self, passing to self, alternating (2 min)',
+      ];
+      if (level !== 'beginner') {
+        base.push('Shuffle and slide footwork along the net with block jumps: 6 reps each direction');
+        base.push('Partner passing at increasing speed: easy to game-pace over 3 min');
+      }
+      if (level === 'advanced' || level === 'elite') {
+        base.push('Approach jump and swing at 75% against a box block (2 min)');
+      }
+      return base;
+    },
+
+    sessions: {
+      serving(level, weakAreas) {
+        const exercises = [];
+        if (level === 'beginner') {
+          exercises.push('Underhand serve from the service line: 20 reps, focus on consistent toss and contact');
+          exercises.push('Overhand float serve from 20 feet: 20 reps, focus on toss in front of hitting shoulder');
+          exercises.push('Serve over the net from full distance: 15 attempts, track makes');
+        } else if (level === 'intermediate') {
+          exercises.push('Float serve to zones: 10 serves to each deep corner (zones 1 and 5)');
+          exercises.push('Short serve targeting zone 2-3 seam: 15 reps');
+          exercises.push('Serve receive pressure: serve 20 balls against a passer and track ace percentage');
+        } else if (level === 'advanced') {
+          exercises.push('Jump float serve: 25 reps focusing on consistent toss and aggressive contact');
+          exercises.push('Topspin jump serve progression: 15 reps with full approach');
+          exercises.push('Tactical serving: 5 serves to each of 6 zones, charting accuracy');
+        } else {
+          exercises.push('Jump serve at match intensity: 30 reps with target zones called before each serve');
+          exercises.push('Serve under fatigue: 10 sprints to the end line and back, then 5 serves. Repeat 4 rounds');
+          exercises.push('Serve-and-defend: serve then immediately transition to play defence on a down ball');
+        }
+        if (weakAreas && weakAreas.length > 0) {
+          exercises.push('Focus: ' + weakAreas[0].aspect + ' correction drill');
+        }
+        return { title: 'Serving Session', exercises };
+      },
+      spiking(level, weakAreas) {
+        const exercises = [];
+        if (level === 'beginner') {
+          exercises.push('Standing spike from a box: toss to self and hit over the net, 20 reps');
+          exercises.push('3-step approach with no ball: footwork only, 20 reps');
+          exercises.push('Approach and hit a coach-set ball from a high toss: 15 reps');
+        } else if (level === 'intermediate') {
+          exercises.push('Hitting from a setter: 20 high-outside sets, focus on approach timing');
+          exercises.push('Cross-court vs. line hitting: 10 reps each direction on command');
+          exercises.push('Tip and roll shot practice: 10 tips, 10 roll shots from outside');
+        } else if (level === 'advanced') {
+          exercises.push('Hitting against a double block: 20 reps reading the block and adjusting shot');
+          exercises.push('Back-row attack from position 1: 15 reps with full approach behind the 3-metre line');
+          exercises.push('Transition hitting: dig, set, approach, and attack in sequence, 12 reps');
+        } else {
+          exercises.push('Game-speed hitting with full defence on the other side: 20 swings');
+          exercises.push('1-on-1 hitter vs. blocker competition: first to 10 kills, best of 3');
+          exercises.push('Combination plays: hit quick sets, slides, and pipes called by the setter, 20 reps');
+        }
+        if (weakAreas && weakAreas.length > 0) {
+          exercises.push('Focus: ' + weakAreas[0].aspect + ' correction work');
+        }
+        return { title: 'Spiking Session', exercises };
+      },
+      passing(level, weakAreas) {
+        const exercises = [];
+        if (level === 'beginner') {
+          exercises.push('Partner forearm passing: 30 passes each, focus on flat platform and quiet arms');
+          exercises.push('Coach-tossed balls: pass to target at the net, 20 reps from zones 5 and 6');
+          exercises.push('Overhead passing (setting) to self: 30 consecutive without dropping');
+        } else if (level === 'intermediate') {
+          exercises.push('Serve receive in a 3-person formation: rotate every 10 serves, 30 total');
+          exercises.push('Pass and transition: pass to target, then sprint to your hitting position, 15 reps');
+          exercises.push('Deep-court passing: partner hits down balls from a box, pass 20 to target');
+        } else if (level === 'advanced') {
+          exercises.push('Serve receive against live jump servers: 30 balls, track pass quality (3-2-1-0 scale)');
+          exercises.push('Passing from different positions: 10 balls from each serve-receive spot');
+          exercises.push('Pressure passing: must make 5 perfect passes (rated 3) before the drill ends');
+        } else {
+          exercises.push('Elite serve receive: 40 balls from top servers with full transition to attack');
+          exercises.push('Passing competition: 2 passers compete, first to 15 quality passes wins');
+          exercises.push('Serve-receive to full rally: every pass leads to a live 6-on-6 rally point');
+        }
+        if (weakAreas && weakAreas.length > 0) {
+          exercises.push('Focus: ' + weakAreas[0].aspect + ' specific passing drill');
+        }
+        return { title: 'Passing & Receiving Session', exercises };
+      },
+      blocking(level, weakAreas) {
+        const exercises = [];
+        if (level === 'beginner') {
+          exercises.push('Block jump technique at the net: 20 jumps focusing on hand penetration over the tape');
+          exercises.push('Slide step footwork along the net without jumping: 20 reps each direction');
+          exercises.push('Partner toss over the net: block the ball down with firm hands, 15 reps');
+        } else if (level === 'intermediate') {
+          exercises.push('Slide-and-block: start middle, slide to pin, jump and block a hit, 10 reps each side');
+          exercises.push('Read blocking: a hitter attacks from outside, time your block to their swing, 15 reps');
+          exercises.push('Block and transition to attack: block, land, approach, and hit, 8 reps');
+        } else if (level === 'advanced') {
+          exercises.push('Double block coordination: middle and outside close the block together, 15 reps');
+          exercises.push('Blocking quick attacks: middle blocker vs. quick hitter, 15 reps');
+          exercises.push('Block adjustment drill: blocker must read and move from a fake to the real hitter, 12 reps');
+        } else {
+          exercises.push('Live blocking in 6-on-6: focus on block touches and stuff blocks per rotation');
+          exercises.push('Block and dig combination: block the first ball, land and dig the second, 10 sequences');
+          exercises.push('Film study integration: watch opponent hitter tendencies, then block live against those patterns');
+        }
+        if (weakAreas && weakAreas.length > 0) {
+          exercises.push('Focus: ' + weakAreas[0].aspect + ' specific blocking drill');
+        }
+        return { title: 'Blocking Session', exercises };
+      },
+    },
+
+    fitness(level) {
+      if (level === 'beginner') {
+        return { title: 'Volleyball Fitness', exercises: [
+          'Bodyweight squats and lunges: 3x 12 each',
+          'Plank holds and side planks: 3x 30 seconds each',
+          'Lateral shuffles with resistance band: 3x 10 each direction',
+          'Jump rope for footwork and coordination: 3x 1-minute intervals',
+        ]};
+      } else if (level === 'intermediate') {
+        return { title: 'Volleyball Fitness', exercises: [
+          'Box jumps for vertical power: 4x 8 with full reset between reps',
+          'Single-leg Romanian deadlifts: 3x 10 each leg',
+          'Lateral bounds: 4x 8 each direction for court coverage speed',
+          'Medicine ball core rotations: 3x 12 each side',
+          'Approach jump touches: 4x 6, reach and touch highest point on wall',
+        ]};
+      } else {
+        return { title: 'Volleyball Fitness', exercises: [
+          'Depth jumps and reactive box jumps: 4x 6 for explosive power',
+          'Barbell squats and trap bar deadlifts: 4x 5 at 80% 1RM',
+          'Lateral agility ladder and cone drill circuit: 4x through',
+          'Weighted approach jumps with vest: 3x 8',
+          'Anaerobic conditioning: 10x court sprint (sideline to sideline) with 20-second rest',
         ]};
       }
     },
