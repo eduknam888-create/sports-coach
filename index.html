@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ProCoach AI - AI-Powered Coaching for Every Sport</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0"></script>
+<script type="module">
+  import { FilesetResolver, PoseLandmarker } from 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.8/vision_bundle.mjs';
+  window.FilesetResolver = FilesetResolver;
+  window.PoseLandmarker = PoseLandmarker;
+  window.dispatchEvent(new Event('mediapipe-ready'));
+</script>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --primary:#4f46e5;--primary-light:#818cf8;--primary-dark:#3730a3;
+    --accent:#06b6d4;--accent-light:#22d3ee;
+    --bg:#0f172a;--bg-card:#1e293b;--bg-surface:#334155;
+    --text:#f8fafc;--text-muted:#94a3b8;--text-dim:#64748b;
+    --success:#22c55e;--warning:#f59e0b;--danger:#ef4444;
+    --radius:12px;--radius-sm:8px;--radius-xs:6px;
+    --shadow:0 4px 24px rgba(0,0,0,.3);
+    --transition:all .25s ease;
+  }
+  body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
+  a{color:var(--primary-light);text-decoration:none}
+  button{cursor:pointer;font-family:inherit;border:none;outline:none}
+  input,select,textarea{font-family:inherit;outline:none}
+  .hidden{display:none!important}
+
+  /* ===== AUTH SCREEN ===== */
+  #auth-screen{
+    min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 40%,#312e81 70%,#0f172a 100%);
+    padding:2rem;text-align:center;position:relative;overflow:hidden;
+  }
+  #auth-screen::before{
+    content:'';position:absolute;width:600px;height:600px;border-radius:50%;
+    background:radial-gradient(circle,rgba(79,70,229,.15),transparent 70%);
+    top:-200px;right:-200px;
+  }
+  #auth-screen::after{
+    content:'';position:absolute;width:500px;height:500px;border-radius:50%;
+    background:radial-gradient(circle,rgba(6,182,212,.1),transparent 70%);
+    bottom:-150px;left:-150px;
+  }
+  .auth-content{position:relative;z-index:1;max-width:700px;width:100%}
+  .auth-logo{font-size:3rem;font-weight:800;margin-bottom:.25rem;background:linear-gradient(135deg,#818cf8,#22d3ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  .auth-tagline{font-size:1.25rem;color:var(--text-muted);margin-bottom:2.5rem}
+  .sport-icons-grid{
+    display:grid;grid-template-columns:repeat(5,1fr);gap:1.25rem;margin-bottom:2.5rem;
+  }
+  .sport-icon-card{
+    background:rgba(30,41,59,.7);backdrop-filter:blur(12px);border:1px solid rgba(148,163,184,.1);
+    border-radius:var(--radius);padding:1.5rem 1rem;transition:var(--transition);
+  }
+  .sport-icon-card:hover{transform:translateY(-4px);border-color:var(--primary-light);background:rgba(30,41,59,.9)}
+  .sport-icon-card .icon{font-size:2.5rem;margin-bottom:.5rem;display:block}
+  .sport-icon-card .label{font-size:.85rem;color:var(--text-muted);font-weight:500}
+  #google-signin{
+    display:inline-flex;align-items:center;gap:.75rem;
+    background:#fff;color:#333;font-size:1rem;font-weight:600;
+    padding:.875rem 2rem;border-radius:50px;
+    box-shadow:0 2px 12px rgba(0,0,0,.2);transition:var(--transition);margin-bottom:2.5rem;
+  }
+  #google-signin:hover{transform:scale(1.03);box-shadow:0 4px 20px rgba(0,0,0,.3)}
+  #google-signin svg{width:22px;height:22px}
+  .auth-features{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;text-align:left}
+  .auth-feature{background:rgba(30,41,59,.5);backdrop-filter:blur(8px);border:1px solid rgba(148,163,184,.08);border-radius:var(--radius-sm);padding:1.25rem}
+  .auth-feature .feat-icon{font-size:1.5rem;margin-bottom:.5rem;display:block}
+  .auth-feature h4{font-size:.95rem;margin-bottom:.25rem}
+  .auth-feature p{font-size:.8rem;color:var(--text-muted);line-height:1.5}
+
+  /* ===== TOP BAR ===== */
+  .top-bar{
+    display:flex;align-items:center;gap:1rem;
+    background:var(--bg-card);border-bottom:1px solid rgba(148,163,184,.1);
+    padding:.5rem 1.5rem;position:sticky;top:0;z-index:100;
+  }
+  .top-bar-logo{font-size:1.25rem;font-weight:800;background:linear-gradient(135deg,#818cf8,#22d3ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;white-space:nowrap}
+  .sport-tabs{display:flex;gap:.375rem;flex:1;overflow-x:auto;padding:.25rem 0;margin:0 1rem}
+  .sport-tabs::-webkit-scrollbar{display:none}
+  .sport-tab{
+    display:flex;align-items:center;gap:.4rem;padding:.5rem 1rem;
+    border-radius:50px;background:transparent;color:var(--text-muted);
+    font-size:.85rem;font-weight:500;white-space:nowrap;transition:var(--transition);border:1px solid transparent;
+  }
+  .sport-tab:hover{background:var(--bg-surface);color:var(--text)}
+  .sport-tab.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+  .sport-tab .tab-icon{font-size:1.1rem}
+  .user-section{display:flex;align-items:center;gap:.75rem;margin-left:auto;white-space:nowrap}
+  #user-avatar{width:34px;height:34px;border-radius:50%;border:2px solid var(--primary-light);object-fit:cover}
+  #user-name{font-size:.85rem;font-weight:500;color:var(--text-muted)}
+  #signout-btn{
+    padding:.4rem .875rem;border-radius:var(--radius-xs);font-size:.8rem;
+    background:rgba(239,68,68,.1);color:var(--danger);font-weight:500;transition:var(--transition);
+  }
+  #signout-btn:hover{background:rgba(239,68,68,.2)}
+
+  /* ===== MAIN CONTENT ===== */
+  .main-content{padding:1.5rem;max-width:1400px;margin:0 auto}
+
+  /* ===== OVERVIEW PAGE ===== */
+  .welcome-msg{margin-bottom:1.5rem}
+  .welcome-msg h1{font-size:1.75rem;font-weight:700;margin-bottom:.25rem}
+  .welcome-msg p{color:var(--text-muted)}
+  .sport-cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.25rem;margin-bottom:2rem}
+  .sport-card{
+    background:var(--bg-card);border:1px solid rgba(148,163,184,.08);border-radius:var(--radius);
+    padding:1.5rem;transition:var(--transition);cursor:pointer;
+  }
+  .sport-card:hover{border-color:var(--primary-light);transform:translateY(-2px);box-shadow:var(--shadow)}
+  .sport-card .card-icon{font-size:2.5rem;margin-bottom:.75rem;display:block}
+  .sport-card .card-name{font-size:1.1rem;font-weight:600;margin-bottom:.75rem}
+  .sport-card .card-stats{display:flex;gap:1rem;margin-bottom:1rem}
+  .sport-card .card-stat{font-size:.8rem;color:var(--text-muted)}
+  .sport-card .card-stat strong{display:block;font-size:1.1rem;color:var(--text);margin-bottom:.1rem}
+  .sport-card .start-training{
+    display:block;width:100%;padding:.6rem;border-radius:var(--radius-xs);
+    background:var(--primary);color:#fff;font-size:.85rem;font-weight:600;
+    text-align:center;transition:var(--transition);
+  }
+  .sport-card .start-training:hover{background:var(--primary-dark)}
+  .overview-chart-section{background:var(--bg-card);border-radius:var(--radius);padding:1.5rem;border:1px solid rgba(148,163,184,.08)}
+  .overview-chart-section h3{font-size:1.1rem;font-weight:600;margin-bottom:1rem}
+  .chart-container{position:relative;width:100%;max-height:350px}
+  .chart-container canvas{width:100%!important}
+
+  /* ===== SPORT PAGE ===== */
+  .sport-page-header{display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem}
+  #sport-page-icon{font-size:2rem}
+  #sport-page-title{font-size:1.5rem;font-weight:700}
+  .sport-sub-nav{display:flex;gap:.25rem;margin-bottom:1.5rem;border-bottom:1px solid rgba(148,163,184,.1);padding-bottom:.25rem;overflow-x:auto}
+  .sport-nav-link{
+    padding:.6rem 1.25rem;font-size:.85rem;font-weight:500;color:var(--text-muted);
+    border-radius:var(--radius-xs) var(--radius-xs) 0 0;transition:var(--transition);
+    border-bottom:2px solid transparent;background:transparent;white-space:nowrap;
+  }
+  .sport-nav-link:hover{color:var(--text);background:rgba(148,163,184,.05)}
+  .sport-nav-link.active{color:var(--primary-light);border-bottom-color:var(--primary-light)}
+  .sport-section{display:none}
+  .sport-section.active{display:block}
+
+  /* Dashboard */
+  .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem}
+  .stat-box{
+    background:var(--bg-card);border:1px solid rgba(148,163,184,.08);border-radius:var(--radius-sm);
+    padding:1.25rem;text-align:center;
+  }
+  .stat-box .stat-val{font-size:1.75rem;font-weight:700;color:var(--primary-light)}
+  .stat-box .stat-label{font-size:.8rem;color:var(--text-muted);margin-top:.25rem}
+  .dashboard-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
+  .dash-card{background:var(--bg-card);border:1px solid rgba(148,163,184,.08);border-radius:var(--radius);padding:1.25rem}
+  .dash-card h4{font-size:1rem;font-weight:600;margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem}
+  .dash-card p{font-size:.9rem;color:var(--text-muted);line-height:1.6}
+  .dash-card .chart-container{margin-top:.5rem}
+
+  /* Analyze */
+  .analyze-layout{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+  .analyze-left,.analyze-right{display:flex;flex-direction:column;gap:1.25rem}
+  .analysis-type-grid{display:flex;flex-wrap:wrap;gap:.5rem}
+  #analysis-type-selector{display:flex;flex-wrap:wrap;gap:.5rem}
+  #analysis-type-selector .type-btn{
+    padding:.5rem 1rem;border-radius:50px;font-size:.8rem;font-weight:500;
+    background:var(--bg-surface);color:var(--text-muted);transition:var(--transition);border:1px solid transparent;
+  }
+  #analysis-type-selector .type-btn:hover{color:var(--text);border-color:var(--text-dim)}
+  #analysis-type-selector .type-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+  .source-toggle{display:flex;gap:.5rem;margin-bottom:.75rem}
+  .src-btn{
+    flex:1;padding:.6rem;border-radius:var(--radius-xs);font-size:.85rem;font-weight:500;
+    background:var(--bg-surface);color:var(--text-muted);text-align:center;transition:var(--transition);
+  }
+  .src-btn.active{background:var(--primary);color:#fff}
+  #analysis-upload-zone{
+    border:2px dashed var(--bg-surface);border-radius:var(--radius);
+    padding:3rem 1.5rem;text-align:center;color:var(--text-muted);transition:var(--transition);
+    min-height:260px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;
+  }
+  #analysis-upload-zone:hover{border-color:var(--primary-light)}
+  #analysis-upload-zone .upload-icon{font-size:3rem;margin-bottom:.75rem;display:block}
+  #analysis-upload-zone p{font-size:.9rem;margin-bottom:.5rem}
+  #analysis-upload-zone small{font-size:.75rem;color:var(--text-dim)}
+  #analysis-video-upload{position:absolute;inset:0;opacity:0;cursor:pointer}
+  #uploaded-video,#camera-video{width:100%;border-radius:var(--radius);background:#000;display:none;max-height:300px}
+  #pose-canvas{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none}
+  .camera-controls{display:flex;gap:.5rem;margin-top:.5rem}
+  .camera-controls button{
+    padding:.5rem 1rem;border-radius:var(--radius-xs);font-size:.8rem;font-weight:500;
+    background:var(--primary);color:#fff;transition:var(--transition);
+  }
+  #camera-stop{background:var(--danger)}
+  #start-analysis{
+    width:100%;padding:.75rem;border-radius:var(--radius-sm);font-size:.95rem;font-weight:600;
+    background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff;transition:var(--transition);
+  }
+  #start-analysis:hover{opacity:.9}
+  #analysis-progress{display:none;margin-top:.75rem}
+  .progress-bar-track{width:100%;height:6px;background:var(--bg-surface);border-radius:3px;overflow:hidden}
+  .progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--accent));border-radius:3px;transition:width .3s ease;width:0}
+  .progress-label{font-size:.8rem;color:var(--text-muted);margin-top:.4rem;text-align:center}
+  .feedback-panel{background:var(--bg-card);border:1px solid rgba(148,163,184,.08);border-radius:var(--radius);padding:1.5rem}
+  .feedback-panel h3{font-size:1.1rem;font-weight:600;margin-bottom:1rem}
+  #feedback-placeholder{text-align:center;color:var(--text-dim);padding:2rem 0;font-size:.9rem}
+  #feedback-results{display:none}
+  .score-display{display:flex;align-items:center;gap:1.5rem;margin-bottom:1.25rem;padding-bottom:1.25rem;border-bottom:1px solid rgba(148,163,184,.08)}
+  .score-circle{position:relative;width:100px;height:100px;flex-shrink:0}
+  .score-circle svg{width:100%;height:100%;transform:rotate(-90deg)}
+  .score-circle-bg{fill:none;stroke:var(--bg-surface);stroke-width:8}
+  #score-circle-fill{fill:none;stroke:var(--primary-light);stroke-width:8;stroke-linecap:round;stroke-dasharray:282.7;stroke-dashoffset:282.7;transition:stroke-dashoffset .8s ease}
+  .score-val{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:700}
+  #overall-score{font-size:1.5rem;font-weight:700}
+  .score-info h4{font-size:1rem;margin-bottom:.25rem}
+  .score-info p{font-size:.8rem;color:var(--text-muted)}
+  #feedback-details{display:flex;flex-direction:column;gap:.75rem;margin-bottom:1.25rem}
+  .feedback-item{
+    background:var(--bg-surface);border-radius:var(--radius-xs);padding:.875rem;
+    display:flex;align-items:flex-start;gap:.75rem;
+  }
+  .feedback-item .fi-icon{font-size:1.25rem;flex-shrink:0;margin-top:.1rem}
+  .feedback-item .fi-label{font-size:.85rem;font-weight:600;margin-bottom:.15rem}
+  .feedback-item .fi-text{font-size:.8rem;color:var(--text-muted);line-height:1.5}
+  .feedback-item .fi-score{margin-left:auto;font-weight:700;font-size:1rem;color:var(--primary-light);white-space:nowrap}
+  .drills-section h4{font-size:.95rem;font-weight:600;margin-bottom:.75rem}
+  #feedback-drills{display:flex;flex-direction:column;gap:.5rem}
+  .drill-item{
+    background:var(--bg-surface);border-radius:var(--radius-xs);padding:.75rem;
+    display:flex;align-items:center;gap:.75rem;font-size:.85rem;
+  }
+  .drill-item .drill-icon{font-size:1.1rem}
+  #save-analysis{
+    margin-top:1rem;width:100%;padding:.65rem;border-radius:var(--radius-xs);font-size:.85rem;font-weight:600;
+    background:var(--success);color:#fff;transition:var(--transition);
+  }
+  #save-analysis:hover{opacity:.9}
+
+  /* Training Plan */
+  .week-nav{display:flex;align-items:center;gap:1rem;margin-bottom:1.25rem}
+  .week-nav button{
+    width:36px;height:36px;border-radius:50%;background:var(--bg-surface);color:var(--text);
+    display:flex;align-items:center;justify-content:center;font-size:1.1rem;transition:var(--transition);
+  }
+  .week-nav button:hover{background:var(--primary)}
+  #week-label{font-size:1.1rem;font-weight:600}
+  #edit-schedule-btn{
+    margin-left:auto;padding:.5rem 1rem;border-radius:var(--radius-xs);font-size:.8rem;font-weight:500;
+    background:var(--bg-surface);color:var(--text-muted);transition:var(--transition);
+  }
+  #edit-schedule-btn:hover{background:var(--primary);color:#fff}
+  #weekly-plan{display:grid;grid-template-columns:repeat(7,1fr);gap:.75rem}
+  .day-card{background:var(--bg-card);border:1px solid rgba(148,163,184,.08);border-radius:var(--radius-sm);padding:1rem;min-height:180px}
+  .day-card .day-name{font-size:.8rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.75rem}
+  .day-card .day-rest{font-size:.8rem;color:var(--text-dim);font-style:italic}
+  .session-item{
+    background:var(--bg-surface);border-radius:var(--radius-xs);padding:.6rem;margin-bottom:.5rem;
+    font-size:.8rem;display:flex;align-items:flex-start;gap:.5rem;
+  }
+  .session-item input[type="checkbox"]{accent-color:var(--primary);margin-top:.15rem;flex-shrink:0}
+  .session-item .session-text{flex:1}
+  .session-item .session-time{font-size:.7rem;color:var(--text-dim);display:block;margin-top:.15rem}
+
+  /* Progress */
+  .progress-tabs{display:flex;gap:.25rem;margin-bottom:1.25rem;overflow-x:auto}
+  .progress-tab{
+    padding:.5rem 1rem;border-radius:50px;font-size:.8rem;font-weight:500;
+    background:var(--bg-surface);color:var(--text-muted);transition:var(--transition);white-space:nowrap;
+  }
+  .progress-tab:hover{color:var(--text)}
+  .progress-tab.active{background:var(--primary);color:#fff}
+  #progress-content{min-height:300px}
+  .progress-charts{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.5rem}
+  .progress-chart-card{background:var(--bg-card);border:1px solid rgba(148,163,184,.08);border-radius:var(--radius);padding:1.25rem}
+  .progress-chart-card h4{font-size:.95rem;font-weight:600;margin-bottom:.75rem}
+  .metrics-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem}
+  .metric-card{background:var(--bg-card);border:1px solid rgba(148,163,184,.08);border-radius:var(--radius-sm);padding:1.25rem;text-align:center}
+  .metric-card .metric-val{font-size:1.5rem;font-weight:700;color:var(--primary-light)}
+  .metric-card .metric-label{font-size:.8rem;color:var(--text-muted);margin-top:.25rem}
+  #milestones-list{display:flex;flex-direction:column;gap:.75rem;margin-top:1rem}
+  .milestone{
+    background:var(--bg-card);border:1px solid rgba(148,163,184,.08);border-radius:var(--radius-sm);
+    padding:1rem;display:flex;align-items:center;gap:1rem;
+  }
+  .milestone .ms-icon{font-size:1.5rem}
+  .milestone .ms-text{flex:1}
+  .milestone .ms-text h5{font-size:.9rem;font-weight:600}
+  .milestone .ms-text p{font-size:.8rem;color:var(--text-muted)}
+  .milestone .ms-date{font-size:.75rem;color:var(--text-dim)}
+  #history-list{display:flex;flex-direction:column;gap:.75rem;margin-top:1rem}
+  .history-item{
+    background:var(--bg-card);border:1px solid rgba(148,163,184,.08);border-radius:var(--radius-sm);
+    padding:1rem;display:flex;align-items:center;gap:1rem;
+  }
+  .history-item .hi-type{font-size:.75rem;font-weight:600;color:var(--accent);text-transform:uppercase}
+  .history-item .hi-score{font-size:1.25rem;font-weight:700;color:var(--primary-light);margin-left:auto}
+  .history-item .hi-date{font-size:.75rem;color:var(--text-dim)}
+
+  /* Sport Profile */
+  .profile-form{max-width:600px;display:flex;flex-direction:column;gap:1.5rem}
+  .form-group{display:flex;flex-direction:column;gap:.4rem}
+  .form-group label{font-size:.85rem;font-weight:600;color:var(--text-muted)}
+  .form-group select,.form-group input{
+    padding:.6rem .875rem;border-radius:var(--radius-xs);border:1px solid var(--bg-surface);
+    background:var(--bg-card);color:var(--text);font-size:.9rem;
+  }
+  .form-group select:focus,.form-group input:focus{border-color:var(--primary-light)}
+  .schedule-editor{display:flex;flex-direction:column;gap:.75rem}
+  .day-row{display:flex;align-items:center;gap:.75rem;padding:.5rem 0}
+  .day-row label{width:85px;font-size:.85rem;font-weight:500}
+  .day-row span{font-size:.8rem;color:var(--text-dim)}
+  .day-row input[type="checkbox"]{accent-color:var(--primary)}
+  .day-row input[type="time"]{
+    padding:.4rem .6rem;border-radius:var(--radius-xs);border:1px solid var(--bg-surface);
+    background:var(--bg-card);color:var(--text);font-size:.85rem;
+  }
+  #save-sport-profile{
+    padding:.7rem 2rem;border-radius:var(--radius-sm);font-size:.9rem;font-weight:600;
+    background:var(--primary);color:#fff;transition:var(--transition);align-self:flex-start;
+  }
+  #save-sport-profile:hover{background:var(--primary-dark)}
+
+  /* ===== MODAL ===== */
+  .modal-overlay{
+    position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);
+    display:none;align-items:center;justify-content:center;z-index:200;padding:1rem;
+  }
+  .modal-overlay.active{display:flex}
+  .modal{
+    background:var(--bg-card);border:1px solid rgba(148,163,184,.1);border-radius:var(--radius);
+    padding:2rem;width:100%;max-width:550px;max-height:85vh;overflow-y:auto;
+  }
+  .modal h3{font-size:1.15rem;font-weight:700;margin-bottom:1.25rem}
+  #schedule-grid{display:flex;flex-direction:column;gap:.75rem}
+  #schedule-grid .day-row label{width:90px}
+  #schedule-grid .day-row input[type="time"]{
+    background:var(--bg);font-size:.85rem;
+  }
+  .schedule-grid-row select{
+    padding:.4rem .6rem;border-radius:var(--radius-xs);border:1px solid var(--bg-surface);
+    background:var(--bg);color:var(--text);font-size:.85rem;flex:1;
+  }
+  .modal-actions{display:flex;gap:.75rem;margin-top:1.5rem;justify-content:flex-end}
+  .modal-actions button{padding:.55rem 1.25rem;border-radius:var(--radius-xs);font-size:.85rem;font-weight:600;transition:var(--transition)}
+  #cancel-schedule{background:var(--bg-surface);color:var(--text-muted)}
+  #cancel-schedule:hover{background:var(--bg)}
+  #save-schedule{background:var(--primary);color:#fff}
+  #save-schedule:hover{background:var(--primary-dark)}
+
+  /* ===== TOAST ===== */
+  #toast{
+    position:fixed;bottom:2rem;right:2rem;z-index:300;
+    background:var(--bg-card);border:1px solid rgba(148,163,184,.15);border-radius:var(--radius-sm);
+    padding:1rem 1.5rem;box-shadow:var(--shadow);
+    font-size:.9rem;font-weight:500;
+    transform:translateY(120%);opacity:0;transition:all .35s ease;pointer-events:none;
+  }
+  #toast.show{transform:translateY(0);opacity:1;pointer-events:auto}
+  #toast.success{border-left:4px solid var(--success)}
+  #toast.error{border-left:4px solid var(--danger)}
+  #toast.info{border-left:4px solid var(--accent)}
+
+  /* ===== RESPONSIVE ===== */
+  @media(max-width:1024px){
+    .sport-cards-grid{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
+    .stats-row{grid-template-columns:repeat(2,1fr)}
+    .dashboard-grid{grid-template-columns:1fr}
+    .analyze-layout{grid-template-columns:1fr}
+    .progress-charts{grid-template-columns:1fr}
+    #weekly-plan{grid-template-columns:repeat(4,1fr)}
+  }
+  @media(max-width:768px){
+    .sport-icons-grid{grid-template-columns:repeat(3,1fr)}
+    .auth-features{grid-template-columns:1fr}
+    .top-bar{flex-wrap:wrap;padding:.5rem .75rem}
+    .sport-tabs{order:3;width:100%;margin:0}
+    #weekly-plan{grid-template-columns:repeat(2,1fr)}
+    .metrics-grid{grid-template-columns:repeat(2,1fr)}
+  }
+  @media(max-width:480px){
+    .sport-icons-grid{grid-template-columns:repeat(2,1fr)}
+    .stats-row{grid-template-columns:1fr}
+    #weekly-plan{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<!-- ==================== AUTH SCREEN ==================== -->
+<div id="auth-screen">
+  <div class="auth-content">
+    <div class="auth-logo">ProCoach AI</div>
+    <p class="auth-tagline">AI-Powered Coaching for Every Sport</p>
+
+    <div class="sport-icons-grid">
+      <div class="sport-icon-card">
+        <span class="icon">&#127951;</span>
+        <span class="label">Cricket</span>
+      </div>
+      <div class="sport-icon-card">
+        <span class="icon">&#9917;</span>
+        <span class="label">Football</span>
+      </div>
+      <div class="sport-icon-card">
+        <span class="icon">&#127934;</span>
+        <span class="label">Tennis</span>
+      </div>
+      <div class="sport-icon-card">
+        <span class="icon">&#127936;</span>
+        <span class="label">Basketball</span>
+      </div>
+      <div class="sport-icon-card">
+        <span class="icon">&#127945;</span>
+        <span class="label">Hockey</span>
+      </div>
+      <div class="sport-icon-card">
+        <span class="icon">&#127952;</span>
+        <span class="label">Volleyball</span>
+      </div>
+    </div>
+
+    <button id="google-signin">
+      <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      Sign in with Google
+    </button>
+    <button id="guest-signin" style="display:none;margin-top:.75rem;padding:.85rem 2.5rem;background:var(--bg-surface);color:var(--text);border-radius:50px;font-size:1rem;font-weight:600;border:2px solid var(--primary-light);cursor:pointer;transition:var(--transition)">
+      Continue as Guest
+    </button>
+
+    <div class="auth-features">
+      <div class="auth-feature">
+        <span class="feat-icon">&#129302;</span>
+        <h4>AI Analysis</h4>
+        <p>Get instant feedback on your technique with pose detection and AI-powered coaching insights.</p>
+      </div>
+      <div class="auth-feature">
+        <span class="feat-icon">&#128200;</span>
+        <h4>Track Progress</h4>
+        <p>Monitor your improvement over time with detailed charts, scores, and milestone tracking.</p>
+      </div>
+      <div class="auth-feature">
+        <span class="feat-icon">&#128221;</span>
+        <h4>Training Plans</h4>
+        <p>Follow personalized weekly training plans tailored to your sport, level, and goals.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MAIN APP ==================== -->
+<div id="main-app" class="hidden">
+
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="top-bar-logo">ProCoach AI</div>
+    <div class="sport-tabs">
+      <button class="sport-tab active" data-sport="overview"><span class="tab-icon">&#127968;</span> Overview</button>
+      <button class="sport-tab" data-sport="cricket"><span class="tab-icon">&#127951;</span> Cricket</button>
+      <button class="sport-tab" data-sport="football"><span class="tab-icon">&#9917;</span> Football</button>
+      <button class="sport-tab" data-sport="tennis"><span class="tab-icon">&#127934;</span> Tennis</button>
+      <button class="sport-tab" data-sport="basketball"><span class="tab-icon">&#127936;</span> Basketball</button>
+      <button class="sport-tab" data-sport="hockey"><span class="tab-icon">&#127945;</span> Hockey</button>
+      <button class="sport-tab" data-sport="volleyball"><span class="tab-icon">&#127952;</span> Volleyball</button>
+    </div>
+    <div class="user-section">
+      <img id="user-avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='20' fill='%234f46e5'/%3E%3Ctext x='20' y='25' text-anchor='middle' fill='white' font-size='16'%3EU%3C/text%3E%3C/svg%3E" alt="User avatar">
+      <span id="user-name">User</span>
+      <button id="signout-btn">Sign Out</button>
+    </div>
+  </div>
+
+  <div class="main-content">
+
+    <!-- ===== OVERVIEW PAGE ===== -->
+    <div id="page-overview">
+      <div class="welcome-msg">
+        <h1>Welcome back, <span id="welcome-user-name">User</span>!</h1>
+        <p>Your multi-sport coaching dashboard. Pick a sport to get started.</p>
+      </div>
+
+      <div class="sport-cards-grid">
+        <div class="sport-card" data-sport="cricket">
+          <span class="card-icon">&#127951;</span>
+          <div class="card-name">Cricket</div>
+          <div class="card-stats">
+            <div class="card-stat"><strong class="sport-score">--</strong>Score</div>
+            <div class="card-stat"><strong class="sport-analyses">0</strong>Analyses</div>
+          </div>
+          <button class="start-training">Start Training</button>
+        </div>
+        <div class="sport-card" data-sport="football">
+          <span class="card-icon">&#9917;</span>
+          <div class="card-name">Football</div>
+          <div class="card-stats">
+            <div class="card-stat"><strong class="sport-score">--</strong>Score</div>
+            <div class="card-stat"><strong class="sport-analyses">0</strong>Analyses</div>
+          </div>
+          <button class="start-training">Start Training</button>
+        </div>
+        <div class="sport-card" data-sport="tennis">
+          <span class="card-icon">&#127934;</span>
+          <div class="card-name">Tennis</div>
+          <div class="card-stats">
+            <div class="card-stat"><strong class="sport-score">--</strong>Score</div>
+            <div class="card-stat"><strong class="sport-analyses">0</strong>Analyses</div>
+          </div>
+          <button class="start-training">Start Training</button>
+        </div>
+        <div class="sport-card" data-sport="basketball">
+          <span class="card-icon">&#127936;</span>
+          <div class="card-name">Basketball</div>
+          <div class="card-stats">
+            <div class="card-stat"><strong class="sport-score">--</strong>Score</div>
+            <div class="card-stat"><strong class="sport-analyses">0</strong>Analyses</div>
+          </div>
+          <button class="start-training">Start Training</button>
+        </div>
+        <div class="sport-card" data-sport="hockey">
+          <span class="card-icon">&#127945;</span>
+          <div class="card-name">Hockey</div>
+          <div class="card-stats">
+            <div class="card-stat"><strong class="sport-score">--</strong>Score</div>
+            <div class="card-stat"><strong class="sport-analyses">0</strong>Analyses</div>
+          </div>
+          <button class="start-training">Start Training</button>
+        </div>
+        <div class="sport-card" data-sport="volleyball">
+          <span class="card-icon">&#127952;</span>
+          <div class="card-name">Volleyball</div>
+          <div class="card-stats">
+            <div class="card-stat"><strong class="sport-score">--</strong>Score</div>
+            <div class="card-stat"><strong class="sport-analyses">0</strong>Analyses</div>
+          </div>
+          <button class="start-training">Start Training</button>
+        </div>
+      </div>
+
+      <div class="overview-chart-section">
+        <h3>Overall Activity</h3>
+        <div class="chart-container">
+          <canvas id="overview-chart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SPORT PAGE ===== -->
+    <div id="page-sport" class="hidden">
+
+      <div class="sport-page-header">
+        <span id="sport-page-icon">&#127951;</span>
+        <h2 id="sport-page-title">Cricket</h2>
+      </div>
+
+      <div class="sport-sub-nav">
+        <button class="sport-nav-link active" data-section="dashboard">Dashboard</button>
+        <button class="sport-nav-link" data-section="analyze">Analyze</button>
+        <button class="sport-nav-link" data-section="regimen">Training Plan</button>
+        <button class="sport-nav-link" data-section="progress">Progress</button>
+        <button class="sport-nav-link" data-section="profile">Profile</button>
+      </div>
+
+      <!-- Sport Dashboard -->
+      <div id="sport-dashboard" class="sport-section active">
+        <div class="stats-row">
+          <div class="stat-box">
+            <div class="stat-val" id="sport-stat-analyses">0</div>
+            <div class="stat-label">Analyses</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-val" id="sport-stat-sessions">0</div>
+            <div class="stat-label">Sessions</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-val" id="sport-stat-score">--</div>
+            <div class="stat-label">Avg Score</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-val" id="sport-stat-streak">0</div>
+            <div class="stat-label">Day Streak</div>
+          </div>
+        </div>
+        <div class="dashboard-grid">
+          <div class="dash-card">
+            <h4>&#127919; Today's Focus</h4>
+            <p id="sport-today-focus">Select a sport to see your personalized focus for today.</p>
+          </div>
+          <div class="dash-card">
+            <h4>&#128202; Recent Analysis</h4>
+            <p id="sport-recent-analysis">No recent analyses yet. Upload a video to get started!</p>
+          </div>
+          <div class="dash-card" style="grid-column:1/-1">
+            <h4>&#128200; Skill Progress</h4>
+            <div class="chart-container">
+              <canvas id="sport-dashboard-chart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Analyze -->
+      <div id="sport-analyze" class="sport-section">
+        <div class="analyze-layout">
+          <div class="analyze-left">
+            <div>
+              <h3 style="font-size:1rem;font-weight:600;margin-bottom:.75rem">Analysis Type</h3>
+              <div id="analysis-type-selector">
+                <!-- Populated dynamically per sport -->
+              </div>
+            </div>
+
+            <div>
+              <div class="source-toggle">
+                <button class="src-btn active" data-source="upload" id="upload-source">&#128228; Upload Video</button>
+                <button class="src-btn" data-source="camera" id="camera-source">&#127909; Live Camera</button>
+              </div>
+
+              <div id="analysis-upload-zone">
+                <span class="upload-icon">&#128249;</span>
+                <p>Drag & drop your video here</p>
+                <small>Or click to browse. Supports MP4, MOV, WebM</small>
+                <input type="file" id="analysis-video-upload" accept="video/*">
+              </div>
+
+              <div style="position:relative;display:none" id="camera-container">
+                <video id="camera-video" autoplay playsinline></video>
+                <canvas id="pose-canvas"></canvas>
+              </div>
+              <video id="uploaded-video" controls></video>
+
+              <div class="camera-controls" style="display:none" id="camera-controls">
+                <button id="camera-start">&#9654; Start Camera</button>
+                <button id="camera-stop">&#9632; Stop</button>
+              </div>
+
+              <button id="start-analysis">&#9889; Analyze Technique</button>
+
+              <div id="analysis-progress">
+                <div class="progress-bar-track"><div class="progress-bar-fill"></div></div>
+                <div class="progress-label">Analyzing...</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="analyze-right">
+            <div class="feedback-panel">
+              <h3>AI Feedback</h3>
+              <div id="feedback-placeholder">Upload a video and run analysis to see AI-powered feedback on your technique.</div>
+              <div id="feedback-results">
+                <div class="score-display">
+                  <div class="score-circle">
+                    <svg viewBox="0 0 100 100">
+                      <circle class="score-circle-bg" cx="50" cy="50" r="45"/>
+                      <circle id="score-circle-fill" cx="50" cy="50" r="45"/>
+                    </svg>
+                    <div class="score-val"><span id="overall-score">0</span></div>
+                  </div>
+                  <div class="score-info">
+                    <h4>Overall Score</h4>
+                    <p>Based on AI analysis of your technique</p>
+                  </div>
+                </div>
+                <div id="feedback-details">
+                  <!-- Feedback items injected here -->
+                </div>
+                <div class="drills-section">
+                  <h4>&#127947; Recommended Drills</h4>
+                  <div id="feedback-drills">
+                    <!-- Drill items injected here -->
+                  </div>
+                </div>
+                <button id="save-analysis">&#128190; Save Analysis</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Training Plan -->
+      <div id="sport-regimen" class="sport-section">
+        <div class="week-nav">
+          <button id="prev-week">&#8249;</button>
+          <span id="week-label">This Week</span>
+          <button id="next-week">&#8250;</button>
+          <button id="edit-schedule-btn">&#9998; Edit Schedule</button>
+        </div>
+        <div id="weekly-plan">
+          <!-- Day cards populated by JS -->
+          <div class="day-card"><div class="day-name">Mon</div><div class="day-rest">Rest day</div></div>
+          <div class="day-card"><div class="day-name">Tue</div><div class="day-rest">Rest day</div></div>
+          <div class="day-card"><div class="day-name">Wed</div><div class="day-rest">Rest day</div></div>
+          <div class="day-card"><div class="day-name">Thu</div><div class="day-rest">Rest day</div></div>
+          <div class="day-card"><div class="day-name">Fri</div><div class="day-rest">Rest day</div></div>
+          <div class="day-card"><div class="day-name">Sat</div><div class="day-rest">Rest day</div></div>
+          <div class="day-card"><div class="day-name">Sun</div><div class="day-rest">Rest day</div></div>
+        </div>
+      </div>
+
+      <!-- Progress -->
+      <div id="sport-progress" class="sport-section">
+        <div class="progress-tabs">
+          <button class="progress-tab active" data-tab="overview">Overview</button>
+          <button class="progress-tab" data-tab="by-type">By Analysis Type</button>
+          <button class="progress-tab" data-tab="history">History</button>
+        </div>
+        <div id="progress-content">
+          <div class="progress-charts">
+            <div class="progress-chart-card">
+              <h4>Score Over Time</h4>
+              <div class="chart-container">
+                <canvas id="progress-overall-chart"></canvas>
+              </div>
+            </div>
+            <div class="progress-chart-card">
+              <h4>Skill Radar</h4>
+              <div class="chart-container">
+                <canvas id="progress-radar-chart"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="metrics-grid">
+            <div class="metric-card">
+              <div class="metric-val">0</div>
+              <div class="metric-label">Total Analyses</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-val">--</div>
+              <div class="metric-label">Best Score</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-val">0%</div>
+              <div class="metric-label">Improvement</div>
+            </div>
+          </div>
+          <h4 style="font-size:1rem;font-weight:600;margin-bottom:.25rem">Milestones</h4>
+          <div id="milestones-list">
+            <p style="color:var(--text-dim);font-size:.85rem">Complete analyses to earn milestones.</p>
+          </div>
+          <h4 style="font-size:1rem;font-weight:600;margin-top:1.5rem;margin-bottom:.25rem">Analysis History</h4>
+          <div id="history-list">
+            <p style="color:var(--text-dim);font-size:.85rem">No analysis history yet.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sport Profile -->
+      <div id="sport-profile" class="sport-section">
+        <div class="profile-form">
+          <div class="form-group">
+            <label for="sport-role">Role / Position</label>
+            <select id="sport-role">
+              <option value="">Select your role...</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="sport-level">Skill Level</label>
+            <select id="sport-level">
+              <option value="beginner">Beginner</option>
+              <option value="intermediate">Intermediate</option>
+              <option value="advanced">Advanced</option>
+              <option value="professional">Professional</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Training Schedule</label>
+            <div id="sport-profile-schedule" class="schedule-editor">
+              <div class="day-row" data-day="monday">
+                <input type="checkbox"><label>Monday</label>
+                <input type="time" value="17:00"><span>to</span><input type="time" value="19:00">
+              </div>
+              <div class="day-row" data-day="tuesday">
+                <input type="checkbox"><label>Tuesday</label>
+                <input type="time" value="17:00"><span>to</span><input type="time" value="19:00">
+              </div>
+              <div class="day-row" data-day="wednesday">
+                <input type="checkbox"><label>Wednesday</label>
+                <input type="time" value="17:00"><span>to</span><input type="time" value="19:00">
+              </div>
+              <div class="day-row" data-day="thursday">
+                <input type="checkbox"><label>Thursday</label>
+                <input type="time" value="17:00"><span>to</span><input type="time" value="19:00">
+              </div>
+              <div class="day-row" data-day="friday">
+                <input type="checkbox"><label>Friday</label>
+                <input type="time" value="17:00"><span>to</span><input type="time" value="19:00">
+              </div>
+              <div class="day-row" data-day="saturday">
+                <input type="checkbox"><label>Saturday</label>
+                <input type="time" value="09:00"><span>to</span><input type="time" value="12:00">
+              </div>
+              <div class="day-row" data-day="sunday">
+                <input type="checkbox"><label>Sunday</label>
+                <input type="time" value="09:00"><span>to</span><input type="time" value="12:00">
+              </div>
+            </div>
+          </div>
+          <button id="save-sport-profile">Save Profile</button>
+        </div>
+      </div>
+
+    </div><!-- /page-sport -->
+  </div><!-- /main-content -->
+</div><!-- /main-app -->
+
+<!-- ===== Schedule Modal ===== -->
+<div id="schedule-modal" class="modal-overlay">
+  <div class="modal">
+    <h3>Edit Training Schedule</h3>
+    <div id="schedule-grid">
+      <div class="day-row" data-day="monday">
+        <input type="checkbox"><label>Monday</label>
+        <input type="time" value="17:00"><span>to</span><input type="time" value="19:00">
+      </div>
+      <div class="day-row" data-day="tuesday">
+        <input type="checkbox"><label>Tuesday</label>
+        <input type="time" value="17:00"><span>to</span><input type="time" value="19:00">
+      </div>
+      <div class="day-row" data-day="wednesday">
+        <input type="checkbox"><label>Wednesday</label>
+        <input type="time" value="17:00"><span>to</span><input type="time" value="19:00">
+      </div>
+      <div class="day-row" data-day="thursday">
+        <input type="checkbox"><label>Thursday</label>
+        <input type="time" value="17:00"><span>to</span><input type="time" value="19:00">
+      </div>
+      <div class="day-row" data-day="friday">
+        <input type="checkbox"><label>Friday</label>
+        <input type="time" value="17:00"><span>to</span><input type="time" value="19:00">
+      </div>
+      <div class="day-row" data-day="saturday">
+        <input type="checkbox"><label>Saturday</label>
+        <input type="time" value="09:00"><span>to</span><input type="time" value="12:00">
+      </div>
+      <div class="day-row" data-day="sunday">
+        <input type="checkbox"><label>Sunday</label>
+        <input type="time" value="09:00"><span>to</span><input type="time" value="12:00">
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button id="cancel-schedule">Cancel</button>
+      <button id="save-schedule">Save Schedule</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Toast ===== -->
+<div id="toast"></div>
+
+<!-- ===== Scripts ===== -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/sports-data.js"></script>
+<script src="js/analysis.js"></script>
+<script src="js/regimen.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
