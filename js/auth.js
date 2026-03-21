@@ -27,7 +27,6 @@ const Auth = {
 
       const guestBtn = document.getElementById('guest-signin');
       if (guestBtn) {
-        guestBtn.style.display = '';
         guestBtn.addEventListener('click', () => this.signInAsGuest());
       }
 
