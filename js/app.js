@@ -17,6 +17,7 @@ const App = {
     Auth.init();
     this.bindSportTabs();
     this.bindSportNav();
+    this.bindAccount();
   },
 
   async onUserReady(user) {
@@ -860,6 +861,110 @@ const App = {
     await Storage.saveSchedule(sport, schedule);
 
     this.toast('Profile & schedule saved!', 'success');
+  },
+
+  // ==================== ACCOUNT ====================
+  bindAccount() {
+    // User menu dropdown toggle
+    const trigger = document.getElementById('user-menu-trigger');
+    const dropdown = document.getElementById('user-dropdown');
+    if (trigger && dropdown) {
+      trigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdown.classList.toggle('open');
+      });
+      document.addEventListener('click', () => dropdown.classList.remove('open'));
+      dropdown.addEventListener('click', (e) => e.stopPropagation());
+    }
+
+    // Open account settings
+    document.getElementById('open-account-btn')?.addEventListener('click', () => {
+      dropdown?.classList.remove('open');
+      this.openAccountSettings();
+    });
+
+    // Export data
+    document.getElementById('export-data-btn')?.addEventListener('click', async () => {
+      dropdown?.classList.remove('open');
+      const data = await Storage.exportAll();
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `procoach-data-${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      this.toast('Data exported!', 'success');
+    });
+
+    // Account modal buttons
+    document.getElementById('save-account-btn')?.addEventListener('click', () => this.saveAccountSettings());
+    document.getElementById('close-account-btn')?.addEventListener('click', () => {
+      document.getElementById('account-modal')?.classList.remove('open');
+    });
+    document.getElementById('clear-data-btn')?.addEventListener('click', () => this.clearAllData());
+
+    // Close modal on overlay click
+    document.getElementById('account-modal')?.addEventListener('click', (e) => {
+      if (e.target.id === 'account-modal') e.target.classList.remove('open');
+    });
+  },
+
+  async openAccountSettings() {
+    const profile = await Storage.getUserProfile();
+    const nameInput = document.getElementById('account-name');
+    const sinceInput = document.getElementById('account-since');
+    const typeInput = document.getElementById('account-type');
+
+    if (nameInput) nameInput.value = profile.name || '';
+    if (sinceInput) sinceInput.value = profile.createdAt
+      ? new Date(profile.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+      : 'Just now';
+    if (typeInput) typeInput.value = firebaseReady ? 'Google Account (Cloud Sync)' : 'Guest (Local Storage)';
+
+    document.getElementById('account-modal')?.classList.add('open');
+  },
+
+  async saveAccountSettings() {
+    const name = document.getElementById('account-name')?.value.trim();
+    if (!name) { this.toast('Please enter a name.', 'error'); return; }
+
+    const profile = await Storage.getUserProfile();
+    profile.name = name;
+    await Storage.saveUserProfile(profile);
+
+    // Update UI everywhere
+    document.getElementById('user-name').textContent = name;
+    document.getElementById('welcome-user-name').textContent = name;
+    if (!firebaseReady) localStorage.setItem('pc_guest_name', name);
+
+    document.getElementById('account-modal')?.classList.remove('open');
+    this.toast('Account updated!', 'success');
+  },
+
+  async clearAllData() {
+    if (!confirm('Are you sure? This will permanently delete ALL your data across all sports. This cannot be undone.')) return;
+
+    const sports = ['cricket', 'football', 'tennis', 'basketball', 'hockey', 'volleyball'];
+    for (const sport of sports) {
+      await Storage.set(`${sport}/analyses`, []);
+      await Storage.set(`${sport}/sessions`, []);
+      await Storage.set(`${sport}/progress`, {});
+      await Storage.set(`${sport}/profile`, { role: null, level: 'beginner' });
+      await Storage.set(`${sport}/schedule`, {
+        monday: { active: false, start: '17:00', end: '19:00' },
+        tuesday: { active: false, start: '17:00', end: '19:00' },
+        wednesday: { active: false, start: '17:00', end: '19:00' },
+        thursday: { active: false, start: '17:00', end: '19:00' },
+        friday: { active: false, start: '17:00', end: '19:00' },
+        saturday: { active: false, start: '09:00', end: '12:00' },
+        sunday: { active: false, start: '09:00', end: '12:00' },
+      });
+    }
+    Storage.clearCache();
+    document.getElementById('account-modal')?.classList.remove('open');
+    this.toast('All data cleared.', 'success');
+    this.showOverview();
   },
 
   // ==================== HELPERS ====================

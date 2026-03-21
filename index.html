@@ -90,14 +90,55 @@
   .sport-tab:hover{background:var(--bg-surface);color:var(--text)}
   .sport-tab.active{background:var(--primary);color:#fff;border-color:var(--primary)}
   .sport-tab .tab-icon{font-size:1.1rem}
-  .user-section{display:flex;align-items:center;gap:.75rem;margin-left:auto;white-space:nowrap}
-  #user-avatar{width:34px;height:34px;border-radius:50%;border:2px solid var(--primary-light);object-fit:cover}
-  #user-name{font-size:.85rem;font-weight:500;color:var(--text-muted)}
-  #signout-btn{
-    padding:.4rem .875rem;border-radius:var(--radius-xs);font-size:.8rem;
-    background:rgba(239,68,68,.1);color:var(--danger);font-weight:500;transition:var(--transition);
+  .user-section{position:relative;display:flex;align-items:center;gap:.75rem;margin-left:auto;white-space:nowrap}
+  #user-avatar{width:34px;height:34px;border-radius:50%;border:2px solid var(--primary-light);object-fit:cover;cursor:pointer}
+  #user-name{font-size:.85rem;font-weight:500;color:var(--text-muted);cursor:pointer}
+  .user-menu-trigger{display:flex;align-items:center;gap:.5rem;cursor:pointer;padding:.25rem .5rem;border-radius:var(--radius-xs);transition:var(--transition)}
+  .user-menu-trigger:hover{background:var(--bg-surface)}
+  .user-dropdown{
+    display:none;position:absolute;top:calc(100% + .5rem);right:0;
+    background:var(--bg-card);border:1px solid rgba(148,163,184,.15);border-radius:var(--radius-sm);
+    min-width:200px;padding:.5rem 0;box-shadow:0 8px 32px rgba(0,0,0,.4);z-index:200;
   }
-  #signout-btn:hover{background:rgba(239,68,68,.2)}
+  .user-dropdown.open{display:block}
+  .user-dropdown-item{
+    display:flex;align-items:center;gap:.6rem;padding:.6rem 1rem;font-size:.85rem;
+    color:var(--text);cursor:pointer;transition:var(--transition);width:100%;background:none;text-align:left;
+  }
+  .user-dropdown-item:hover{background:var(--bg-surface)}
+  .user-dropdown-item.danger{color:var(--danger)}
+  .user-dropdown-item .dd-icon{font-size:1rem;width:20px;text-align:center}
+  .user-dropdown-divider{height:1px;background:rgba(148,163,184,.1);margin:.25rem 0}
+
+  /* Account Modal */
+  .account-modal-overlay{
+    position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);
+    display:none;align-items:center;justify-content:center;z-index:300;padding:1rem;
+  }
+  .account-modal-overlay.open{display:flex}
+  .account-modal{
+    background:var(--bg-card);border:1px solid rgba(148,163,184,.1);border-radius:var(--radius);
+    padding:2rem;width:100%;max-width:450px;
+  }
+  .account-modal h3{font-size:1.2rem;font-weight:700;margin-bottom:1.5rem}
+  .account-field{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1.25rem}
+  .account-field label{font-size:.8rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px}
+  .account-field input{
+    padding:.65rem .875rem;border-radius:var(--radius-xs);border:1px solid var(--bg-surface);
+    background:var(--bg);color:var(--text);font-size:.95rem;
+  }
+  .account-field input:focus{border-color:var(--primary-light);outline:none}
+  .account-field .field-hint{font-size:.75rem;color:var(--text-dim)}
+  .account-actions{display:flex;gap:.75rem;margin-top:1.5rem}
+  .account-actions button{
+    padding:.6rem 1.5rem;border-radius:var(--radius-xs);font-size:.85rem;font-weight:600;transition:var(--transition);
+  }
+  .btn-primary{background:var(--primary);color:#fff}
+  .btn-primary:hover{background:var(--primary-dark)}
+  .btn-secondary{background:var(--bg-surface);color:var(--text)}
+  .btn-secondary:hover{background:rgba(148,163,184,.2)}
+  .btn-danger-outline{background:none;color:var(--danger);border:1px solid var(--danger)}
+  .btn-danger-outline:hover{background:rgba(239,68,68,.1)}
 
   /* ===== MAIN CONTENT ===== */
   .main-content{padding:1.5rem;max-width:1400px;margin:0 auto}
@@ -462,9 +503,17 @@
       <button class="sport-tab" data-sport="volleyball"><span class="tab-icon">&#127952;</span> Volleyball</button>
     </div>
     <div class="user-section">
-      <img id="user-avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='20' fill='%234f46e5'/%3E%3Ctext x='20' y='25' text-anchor='middle' fill='white' font-size='16'%3EU%3C/text%3E%3C/svg%3E" alt="User avatar">
-      <span id="user-name">User</span>
-      <button id="signout-btn">Sign Out</button>
+      <div class="user-menu-trigger" id="user-menu-trigger">
+        <img id="user-avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='20' fill='%234f46e5'/%3E%3Ctext x='20' y='25' text-anchor='middle' fill='white' font-size='16'%3EU%3C/text%3E%3C/svg%3E" alt="User avatar">
+        <span id="user-name">User</span>
+        <span style="font-size:.6rem;color:var(--text-dim)">&#9660;</span>
+      </div>
+      <div class="user-dropdown" id="user-dropdown">
+        <button class="user-dropdown-item" id="open-account-btn"><span class="dd-icon">&#9881;</span> Account Settings</button>
+        <button class="user-dropdown-item" id="export-data-btn"><span class="dd-icon">&#128190;</span> Export Data</button>
+        <div class="user-dropdown-divider"></div>
+        <button class="user-dropdown-item danger" id="signout-btn"><span class="dd-icon">&#128682;</span> Sign Out</button>
+      </div>
     </div>
   </div>
 
@@ -837,6 +886,35 @@
     <div class="modal-actions">
       <button id="cancel-schedule">Cancel</button>
       <button id="save-schedule">Save Schedule</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Account Settings Modal ===== -->
+<div class="account-modal-overlay" id="account-modal">
+  <div class="account-modal">
+    <h3>Account Settings</h3>
+    <div class="account-field">
+      <label for="account-name">Display Name</label>
+      <input type="text" id="account-name" placeholder="Enter your name">
+      <span class="field-hint">This is how you'll be greeted across the app.</span>
+    </div>
+    <div class="account-field">
+      <label>Account Type</label>
+      <input type="text" id="account-type" value="Guest (Local Storage)" disabled style="opacity:.6">
+      <span class="field-hint">Your data is saved on this device. Add Firebase for cloud sync.</span>
+    </div>
+    <div class="account-field">
+      <label>Member Since</label>
+      <input type="text" id="account-since" disabled style="opacity:.6">
+    </div>
+    <div class="account-actions">
+      <button class="btn-primary" id="save-account-btn">Save Changes</button>
+      <button class="btn-secondary" id="close-account-btn">Cancel</button>
+    </div>
+    <div style="margin-top:1.5rem;padding-top:1rem;border-top:1px solid rgba(148,163,184,.1)">
+      <button class="btn-danger-outline" id="clear-data-btn" style="width:100%">Clear All Data</button>
+      <span class="field-hint" style="display:block;margin-top:.4rem;text-align:center">This will permanently delete all your analyses, progress, and settings.</span>
     </div>
   </div>
 </div>
