@@ -83,11 +83,12 @@ const Auth = {
   },
 
   async handleLogin() {
+    const name = document.getElementById('login-name')?.value.trim();
     const email = document.getElementById('login-email')?.value.trim();
     const password = document.getElementById('login-password')?.value;
     this.clearMessages();
 
-    if (!email || !password) {
+    if (!name || !email || !password) {
       this.showError('Please fill in all fields.');
       return;
     }
@@ -112,8 +113,7 @@ const Auth = {
         this.showError(this.getErrorMessage(err.code));
       }
     } else {
-      // Local mode: sign in as guest with email as name
-      const name = email.split('@')[0];
+      // Local mode: sign in with the provided username
       localStorage.setItem('pc_guest_name', name);
       this.signInAsGuest(name);
     }
