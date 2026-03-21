@@ -61,17 +61,78 @@
   .sport-icon-card .label{font-size:.85rem;color:var(--text-muted);font-weight:500}
   #google-signin{
     display:inline-flex;align-items:center;gap:.75rem;
-    background:#fff;color:#333;font-size:1rem;font-weight:600;
-    padding:.875rem 2rem;border-radius:50px;
-    box-shadow:0 2px 12px rgba(0,0,0,.2);transition:var(--transition);margin-bottom:2.5rem;
+    background:#fff;color:#333;font-size:.9rem;font-weight:600;
+    padding:.7rem 1.5rem;border-radius:50px;
+    box-shadow:0 2px 12px rgba(0,0,0,.2);transition:var(--transition);width:100%;justify-content:center;
   }
-  #google-signin:hover{transform:scale(1.03);box-shadow:0 4px 20px rgba(0,0,0,.3)}
-  #google-signin svg{width:22px;height:22px}
+  #google-signin:hover{transform:scale(1.02);box-shadow:0 4px 20px rgba(0,0,0,.3)}
+  #google-signin svg,#google-signin-2 svg{width:20px;height:20px}
+  #google-signin-2{
+    display:inline-flex;align-items:center;gap:.75rem;
+    background:#fff;color:#333;font-size:.9rem;font-weight:600;
+    padding:.7rem 1.5rem;border-radius:50px;
+    box-shadow:0 2px 12px rgba(0,0,0,.2);transition:var(--transition);width:100%;justify-content:center;
+  }
+  #google-signin-2:hover{transform:scale(1.02);box-shadow:0 4px 20px rgba(0,0,0,.3)}
   .auth-features{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;text-align:left}
   .auth-feature{background:rgba(30,41,59,.5);backdrop-filter:blur(8px);border:1px solid rgba(148,163,184,.08);border-radius:var(--radius-sm);padding:1.25rem}
   .auth-feature .feat-icon{font-size:1.5rem;margin-bottom:.5rem;display:block}
   .auth-feature h4{font-size:.95rem;margin-bottom:.25rem}
   .auth-feature p{font-size:.8rem;color:var(--text-muted);line-height:1.5}
+
+  /* Auth Forms */
+  .auth-panel{
+    background:rgba(30,41,59,.8);backdrop-filter:blur(16px);border:1px solid rgba(148,163,184,.12);
+    border-radius:var(--radius);padding:2rem;width:100%;max-width:400px;margin:1.5rem auto;
+  }
+  .auth-tabs{display:flex;gap:0;margin-bottom:1.5rem;border-radius:var(--radius-xs);overflow:hidden;border:1px solid rgba(148,163,184,.15)}
+  .auth-tab{
+    flex:1;padding:.65rem;text-align:center;font-size:.9rem;font-weight:600;
+    background:transparent;color:var(--text-muted);cursor:pointer;transition:var(--transition);
+  }
+  .auth-tab.active{background:var(--primary);color:#fff}
+  .auth-tab:hover:not(.active){background:rgba(148,163,184,.1)}
+  .auth-form{display:none}
+  .auth-form.active{display:block}
+  .auth-form-group{margin-bottom:1rem}
+  .auth-form-group label{display:block;font-size:.8rem;font-weight:600;color:var(--text-muted);margin-bottom:.35rem;text-transform:uppercase;letter-spacing:.3px}
+  .auth-form-group input{
+    width:100%;padding:.7rem .875rem;border-radius:var(--radius-xs);
+    border:1px solid rgba(148,163,184,.2);background:rgba(15,23,42,.6);
+    color:var(--text);font-size:.9rem;transition:var(--transition);
+  }
+  .auth-form-group input:focus{border-color:var(--primary-light);outline:none;box-shadow:0 0 0 3px rgba(79,70,229,.15)}
+  .auth-form-group input::placeholder{color:var(--text-dim)}
+  .auth-submit{
+    width:100%;padding:.75rem;border-radius:var(--radius-xs);font-size:.95rem;font-weight:700;
+    background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff;
+    border:none;cursor:pointer;transition:var(--transition);margin-top:.5rem;
+  }
+  .auth-submit:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(79,70,229,.4)}
+  .auth-submit:disabled{opacity:.5;cursor:not-allowed;transform:none}
+  .auth-error{
+    background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);border-radius:var(--radius-xs);
+    padding:.6rem .875rem;font-size:.8rem;color:#f87171;margin-bottom:1rem;display:none;
+  }
+  .auth-error.show{display:block}
+  .auth-success{
+    background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);border-radius:var(--radius-xs);
+    padding:.6rem .875rem;font-size:.8rem;color:#4ade80;margin-bottom:1rem;display:none;
+  }
+  .auth-success.show{display:block}
+  .auth-divider{display:flex;align-items:center;gap:.75rem;margin:1.25rem 0;color:var(--text-dim);font-size:.8rem}
+  .auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:rgba(148,163,184,.15)}
+  .auth-guest-link{
+    display:block;text-align:center;margin-top:1rem;font-size:.85rem;color:var(--text-muted);
+    cursor:pointer;transition:var(--transition);background:none;width:100%;padding:.5rem;
+  }
+  .auth-guest-link:hover{color:var(--text)}
+  .auth-verification{text-align:center;display:none}
+  .auth-verification.show{display:block}
+  .auth-verification .verify-icon{font-size:3rem;margin-bottom:1rem;display:block}
+  .auth-verification h4{font-size:1.1rem;margin-bottom:.5rem}
+  .auth-verification p{font-size:.85rem;color:var(--text-muted);line-height:1.5;margin-bottom:1rem}
+  .password-requirements{font-size:.75rem;color:var(--text-dim);margin-top:.25rem;line-height:1.4}
 
   /* ===== TOP BAR ===== */
   .top-bar{
@@ -429,59 +490,96 @@
 
 <!-- ==================== AUTH SCREEN ==================== -->
 <div id="auth-screen">
-  <button id="guest-signin" style="position:absolute;top:1.5rem;right:1.5rem;z-index:10;padding:.6rem 1.75rem;background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff;border-radius:50px;font-size:.95rem;font-weight:600;border:none;cursor:pointer;transition:var(--transition);box-shadow:0 4px 20px rgba(79,70,229,.4)">
-    Login
-  </button>
-  <button id="google-signin" style="position:absolute;top:1.5rem;right:1.5rem;z-index:10">
-    <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-    Sign in with Google
-  </button>
   <div class="auth-content">
     <div class="auth-logo">ProCoach AI</div>
     <p class="auth-tagline">AI-Powered Coaching for Every Sport</p>
 
-    <div class="sport-icons-grid">
-      <div class="sport-icon-card">
-        <span class="icon">&#127951;</span>
-        <span class="label">Cricket</span>
+    <div class="auth-panel">
+      <!-- Login / Sign Up tabs -->
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="login">Log In</button>
+        <button class="auth-tab" data-tab="signup">Sign Up</button>
       </div>
-      <div class="sport-icon-card">
-        <span class="icon">&#9917;</span>
-        <span class="label">Football</span>
+
+      <div class="auth-error" id="auth-error"></div>
+      <div class="auth-success" id="auth-success"></div>
+
+      <!-- Email Verification Message -->
+      <div class="auth-verification" id="auth-verification">
+        <span class="verify-icon">&#9993;</span>
+        <h4>Check Your Email</h4>
+        <p>We've sent a confirmation link to <strong id="verify-email"></strong>. Please click the link to verify your account.</p>
+        <button class="auth-submit" id="resend-verify-btn" style="background:var(--bg-surface);margin-bottom:.5rem">Resend Verification Email</button>
+        <button class="auth-submit" id="back-to-login-btn" style="background:transparent;border:1px solid rgba(148,163,184,.2)">Back to Log In</button>
       </div>
-      <div class="sport-icon-card">
-        <span class="icon">&#127934;</span>
-        <span class="label">Tennis</span>
-      </div>
-      <div class="sport-icon-card">
-        <span class="icon">&#127936;</span>
-        <span class="label">Basketball</span>
-      </div>
-      <div class="sport-icon-card">
-        <span class="icon">&#127945;</span>
-        <span class="label">Hockey</span>
-      </div>
-      <div class="sport-icon-card">
-        <span class="icon">&#127952;</span>
-        <span class="label">Volleyball</span>
-      </div>
+
+      <!-- Login Form -->
+      <form class="auth-form active" id="login-form">
+        <div class="auth-form-group">
+          <label for="login-email">Email</label>
+          <input type="email" id="login-email" placeholder="you@example.com" required>
+        </div>
+        <div class="auth-form-group">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" placeholder="Enter your password" required>
+        </div>
+        <button type="submit" class="auth-submit" id="login-submit-btn">Log In</button>
+
+        <div class="auth-divider">or</div>
+
+        <button type="button" id="google-signin">
+          <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          Continue with Google
+        </button>
+
+        <button type="button" class="auth-guest-link" id="guest-signin">Continue as Guest (no account needed)</button>
+      </form>
+
+      <!-- Sign Up Form -->
+      <form class="auth-form" id="signup-form">
+        <div class="auth-form-group">
+          <label for="signup-name">Full Name</label>
+          <input type="text" id="signup-name" placeholder="Your name" required>
+        </div>
+        <div class="auth-form-group">
+          <label for="signup-email">Email</label>
+          <input type="email" id="signup-email" placeholder="you@example.com" required>
+        </div>
+        <div class="auth-form-group">
+          <label for="signup-password">Password</label>
+          <input type="password" id="signup-password" placeholder="Create a password" required minlength="6">
+          <span class="password-requirements">Must be at least 6 characters</span>
+        </div>
+        <div class="auth-form-group">
+          <label for="signup-confirm">Confirm Password</label>
+          <input type="password" id="signup-confirm" placeholder="Re-enter your password" required>
+        </div>
+        <button type="submit" class="auth-submit" id="signup-submit-btn">Create Account</button>
+
+        <div class="auth-divider">or</div>
+
+        <button type="button" id="google-signin-2">
+          <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          Sign up with Google
+        </button>
+      </form>
     </div>
 
     <div class="auth-features">
       <div class="auth-feature">
         <span class="feat-icon">&#129302;</span>
         <h4>AI Analysis</h4>
-        <p>Get instant feedback on your technique with pose detection and AI-powered coaching insights.</p>
+        <p>Upload videos or use your camera for instant AI-powered technique feedback.</p>
       </div>
       <div class="auth-feature">
         <span class="feat-icon">&#128200;</span>
         <h4>Track Progress</h4>
-        <p>Monitor your improvement over time with detailed charts, scores, and milestone tracking.</p>
+        <p>Monitor improvement over time with detailed charts and milestone tracking.</p>
       </div>
       <div class="auth-feature">
         <span class="feat-icon">&#128221;</span>
         <h4>Training Plans</h4>
-        <p>Follow personalized weekly training plans tailored to your sport, level, and goals.</p>
+        <p>Personalized weekly plans tailored to your sport, level, and schedule.</p>
       </div>
     </div>
   </div>
