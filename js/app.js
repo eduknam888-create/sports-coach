@@ -325,14 +325,6 @@ const App = {
       });
     });
 
-    // Populate role selector
-    const roleSelect = document.getElementById('analysis-role-selector');
-    if (roleSelect && sportData.roles) {
-      roleSelect.innerHTML = sportData.roles.map(r =>
-        `<option value="${r.id}">${r.name}</option>`
-      ).join('');
-    }
-
     // Reset upload zone when switching sports
     const uploadZone = document.getElementById('analysis-upload-zone');
     const uploadedVideo = document.getElementById('uploaded-video');
@@ -439,7 +431,6 @@ const App = {
   async runAnalysis() {
     const sport = this.currentSport;
     const type = Analysis.currentType;
-    const role = document.getElementById('analysis-role-selector')?.value;
     if (!sport || !type) return;
 
     const video = document.getElementById('uploaded-video');
@@ -474,7 +465,6 @@ const App = {
 
     if (progressFill) progressFill.style.width = '100%';
     if (progressText) progressText.textContent = 'Complete!';
-    result.role = role;
     this.lastAnalysisResult = result;
     this.displayFeedback(result);
     btn.disabled = false;
@@ -485,15 +475,6 @@ const App = {
     document.getElementById('feedback-placeholder')?.classList.add('hidden');
     const resultsEl = document.getElementById('feedback-results');
     resultsEl?.classList.remove('hidden');
-
-    // Show role in feedback header
-    const roleLabel = document.getElementById('feedback-role');
-    if (roleLabel && result.role) {
-      const sportData = SportsData[this.currentSport];
-      const roleInfo = sportData?.roles?.find(r => r.id === result.role);
-      roleLabel.textContent = roleInfo ? `Role: ${roleInfo.name}` : '';
-      roleLabel.style.display = roleInfo ? 'block' : 'none';
-    }
 
     const score = result.overallScore;
     const scoreNum = document.getElementById('overall-score');
@@ -534,7 +515,6 @@ const App = {
     const r = this.lastAnalysisResult;
     await Storage.saveAnalysis(this.currentSport, {
       analysisType: r.analysisType || r.type,
-      role: r.role,
       overallScore: r.overallScore,
       feedback: r.feedback,
       drills: r.drills,
