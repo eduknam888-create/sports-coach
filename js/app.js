@@ -97,7 +97,7 @@ const App = {
 
       const scoreEl = card.querySelector('.sport-score');
       const analysesEl = card.querySelector('.sport-analyses');
-      if (scoreEl) scoreEl.textContent = d.latestScore !== null ? `${d.latestScore}/100` : '--';
+      if (scoreEl) scoreEl.textContent = d?.latestScore != null ? `${d.latestScore}/100` : '--';
       if (analysesEl) analysesEl.textContent = `${d.analysisCount} analyses`;
     });
 

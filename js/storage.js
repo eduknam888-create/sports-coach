@@ -1,88 +1,15 @@
 /**
- * Storage Module - Cloud storage via Firestore
- * All data syncs across devices automatically
- * Falls back to localStorage if Firestore is unavailable
+ * Storage Module - Backend API with localStorage fallback
  */
 const Storage = {
   _cache: {},
   _uid: null,
+  _useApi: false,
 
   setUser(uid) {
     this._uid = uid;
     this._cache = {};
-  },
-
-  // Firestore document reference helpers
-  _userDoc() {
-    return db ? db.collection('users').doc(this._uid) : null;
-  },
-
-  _sportDoc(sport) {
-    const userDoc = this._userDoc();
-    return userDoc ? userDoc.collection('sports').doc(sport) : null;
-  },
-
-  // ==================== GENERIC GET/SET ====================
-  async get(path, fallback = null) {
-    if (!this._uid) return fallback;
-
-    // Check cache first
-    if (this._cache[path] !== undefined) return this._cache[path];
-
-    // Local-only mode
-    if (!firebaseReady || !db) {
-      return this._localGet(path, fallback);
-    }
-
-    try {
-      const parts = path.split('/');
-      let ref;
-      if (parts.length === 1) {
-        ref = this._userDoc();
-      } else {
-        ref = this._sportDoc(parts[0]);
-      }
-      const doc = await ref.get();
-      if (doc.exists) {
-        const data = doc.data();
-        const key = parts.length === 1 ? parts[0] : parts[1];
-        const value = data[key] !== undefined ? data[key] : fallback;
-        this._cache[path] = value;
-        return value;
-      }
-      return fallback;
-    } catch (err) {
-      console.warn('Firestore read error, using localStorage:', err);
-      return this._localGet(path, fallback);
-    }
-  },
-
-  async set(path, value) {
-    if (!this._uid) return;
-    this._cache[path] = value;
-
-    // Local-only mode
-    if (!firebaseReady || !db) {
-      this._localSet(path, value);
-      return;
-    }
-
-    try {
-      const parts = path.split('/');
-      let ref;
-      let key;
-      if (parts.length === 1) {
-        ref = this._userDoc();
-        key = parts[0];
-      } else {
-        ref = this._sportDoc(parts[0]);
-        key = parts[1];
-      }
-      await ref.set({ [key]: value, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
-    } catch (err) {
-      console.warn('Firestore write error, using localStorage:', err);
-      this._localSet(path, value);
-    }
+    this._useApi = API.isLoggedIn();
   },
 
   // LocalStorage fallback
@@ -101,30 +28,50 @@ const Storage = {
 
   // ==================== PROFILE ====================
   async getProfile(sport) {
-    return await this.get(`${sport}/profile`, {
-      role: null,
-      level: 'beginner',
-    });
+    const cacheKey = `${sport}/profile`;
+    if (this._cache[cacheKey]) return this._cache[cacheKey];
+    try {
+      if (this._useApi) {
+        const data = await API.get(`/sports/${sport}/profile`);
+        this._cache[cacheKey] = data;
+        return data;
+      }
+    } catch (e) { /* fallback */ }
+    return this._localGet(cacheKey, { role: null, level: 'beginner' });
   },
 
   async saveProfile(sport, profile) {
-    await this.set(`${sport}/profile`, profile);
+    const cacheKey = `${sport}/profile`;
+    this._cache[cacheKey] = profile;
+    try {
+      if (this._useApi) { await API.put(`/sports/${sport}/profile`, profile); return; }
+    } catch (e) { /* fallback */ }
+    this._localSet(cacheKey, profile);
   },
 
   async getUserProfile() {
-    return await this.get('userProfile', {
-      name: 'Player',
-      createdAt: null,
-    });
+    if (this._cache.userProfile) return this._cache.userProfile;
+    try {
+      if (this._useApi) {
+        const data = await API.get('/profile');
+        this._cache.userProfile = data;
+        return data;
+      }
+    } catch (e) { /* fallback */ }
+    return this._localGet('userProfile', { name: 'Player', createdAt: null });
   },
 
   async saveUserProfile(profile) {
-    await this.set('userProfile', profile);
+    this._cache.userProfile = profile;
+    try {
+      if (this._useApi) { await API.put('/profile', profile); return; }
+    } catch (e) { /* fallback */ }
+    this._localSet('userProfile', profile);
   },
 
   // ==================== SCHEDULE ====================
-  async getSchedule(sport) {
-    return await this.get(`${sport}/schedule`, {
+  _defaultSchedule() {
+    return {
       monday: { active: false, start: '17:00', end: '19:00' },
       tuesday: { active: false, start: '17:00', end: '19:00' },
       wednesday: { active: false, start: '17:00', end: '19:00' },
@@ -132,43 +79,95 @@ const Storage = {
       friday: { active: false, start: '17:00', end: '19:00' },
       saturday: { active: false, start: '09:00', end: '12:00' },
       sunday: { active: false, start: '09:00', end: '12:00' },
-    });
+    };
+  },
+
+  async getSchedule(sport) {
+    const cacheKey = `${sport}/schedule`;
+    if (this._cache[cacheKey]) return this._cache[cacheKey];
+    try {
+      if (this._useApi) {
+        const data = await API.get(`/sports/${sport}/schedule`);
+        const result = Object.keys(data).length ? data : this._defaultSchedule();
+        this._cache[cacheKey] = result;
+        return result;
+      }
+    } catch (e) { /* fallback */ }
+    return this._localGet(cacheKey, this._defaultSchedule());
   },
 
   async saveSchedule(sport, schedule) {
-    await this.set(`${sport}/schedule`, schedule);
+    const cacheKey = `${sport}/schedule`;
+    this._cache[cacheKey] = schedule;
+    try {
+      if (this._useApi) { await API.put(`/sports/${sport}/schedule`, schedule); return; }
+    } catch (e) { /* fallback */ }
+    this._localSet(cacheKey, schedule);
   },
 
   // ==================== ANALYSES ====================
   async getAnalyses(sport) {
-    return await this.get(`${sport}/analyses`, []);
+    const cacheKey = `${sport}/analyses`;
+    if (this._cache[cacheKey]) return this._cache[cacheKey];
+    try {
+      if (this._useApi) {
+        const data = await API.get(`/sports/${sport}/analyses`);
+        this._cache[cacheKey] = data;
+        return data;
+      }
+    } catch (e) { /* fallback */ }
+    return this._localGet(cacheKey, []);
   },
 
   async saveAnalysis(sport, analysis) {
-    const analyses = await this.getAnalyses(sport);
+    const cacheKey = `${sport}/analyses`;
+    delete this._cache[cacheKey]; // invalidate cache
+    try {
+      if (this._useApi) {
+        const saved = await API.post(`/sports/${sport}/analyses`, analysis);
+        return saved;
+      }
+    } catch (e) { /* fallback */ }
+    // Local fallback
+    const analyses = this._localGet(cacheKey, []);
     analysis.id = Date.now();
     analysis.date = new Date().toISOString();
     analyses.unshift(analysis);
     if (analyses.length > 200) analyses.pop();
-    await this.set(`${sport}/analyses`, analyses);
+    this._localSet(cacheKey, analyses);
     return analysis;
   },
 
   // ==================== COMPLETED SESSIONS ====================
   async getCompletedSessions(sport) {
-    return await this.get(`${sport}/sessions`, []);
+    const cacheKey = `${sport}/sessions`;
+    if (this._cache[cacheKey]) return this._cache[cacheKey];
+    try {
+      if (this._useApi) {
+        const data = await API.get(`/sports/${sport}/sessions`);
+        this._cache[cacheKey] = data;
+        return data;
+      }
+    } catch (e) { /* fallback */ }
+    return this._localGet(cacheKey, []);
   },
 
   async toggleSession(sport, dateKey, sessionIndex) {
-    const sessions = await this.getCompletedSessions(sport);
+    const cacheKey = `${sport}/sessions`;
     const key = `${dateKey}_${sessionIndex}`;
+    try {
+      if (this._useApi) {
+        const result = await API.post(`/sports/${sport}/sessions/toggle`, { sessionKey: key });
+        this._cache[cacheKey] = result.sessions;
+        return result.sessions;
+      }
+    } catch (e) { /* fallback */ }
+    const sessions = this._localGet(cacheKey, []);
     const idx = sessions.indexOf(key);
-    if (idx >= 0) {
-      sessions.splice(idx, 1);
-    } else {
-      sessions.push(key);
-    }
-    await this.set(`${sport}/sessions`, sessions);
+    if (idx >= 0) sessions.splice(idx, 1);
+    else sessions.push(key);
+    this._localSet(cacheKey, sessions);
+    this._cache[cacheKey] = sessions;
     return sessions;
   },
 
@@ -179,22 +178,38 @@ const Storage = {
 
   // ==================== PROGRESS ====================
   async getProgress(sport) {
-    return await this.get(`${sport}/progress`, {});
+    const cacheKey = `${sport}/progress`;
+    if (this._cache[cacheKey]) return this._cache[cacheKey];
+    try {
+      if (this._useApi) {
+        const data = await API.get(`/sports/${sport}/progress`);
+        this._cache[cacheKey] = data;
+        return data;
+      }
+    } catch (e) { /* fallback */ }
+    return this._localGet(cacheKey, {});
   },
 
   async addProgressEntry(sport, type, score, details = {}) {
-    const progress = await this.getProgress(sport);
+    const cacheKey = `${sport}/progress`;
+    delete this._cache[cacheKey]; // invalidate
+    try {
+      if (this._useApi) {
+        await API.post(`/sports/${sport}/progress`, { type, score });
+        return;
+      }
+    } catch (e) { /* fallback */ }
+    const progress = this._localGet(cacheKey, {});
     if (!progress[type]) progress[type] = [];
-    progress[type].push({
-      date: new Date().toISOString(),
-      score,
-      ...details,
-    });
-    await this.set(`${sport}/progress`, progress);
+    progress[type].push({ date: new Date().toISOString(), score, ...details });
+    this._localSet(cacheKey, progress);
   },
 
   // ==================== OVERVIEW DATA ====================
   async getOverviewData() {
+    try {
+      if (this._useApi) return await API.get('/overview');
+    } catch (e) { /* fallback */ }
     const sports = ['cricket', 'football', 'tennis', 'basketball', 'hockey', 'volleyball'];
     const overview = {};
     for (const sport of sports) {
@@ -202,11 +217,7 @@ const Storage = {
       const progress = await this.getProgress(sport);
       const allScores = Object.values(progress).flat();
       const latestScore = allScores.length > 0 ? allScores[allScores.length - 1].score : null;
-      overview[sport] = {
-        analysisCount: analyses.length,
-        latestScore,
-        recentAnalysis: analyses[0] || null,
-      };
+      overview[sport] = { analysisCount: analyses.length, latestScore, recentAnalysis: analyses[0] || null };
     }
     return overview;
   },
@@ -215,25 +226,18 @@ const Storage = {
   async getStreak(sport) {
     const sessions = await this.getCompletedSessions(sport);
     const analyses = await this.getAnalyses(sport);
-
     const activityDates = new Set();
     sessions.forEach(s => activityDates.add(s.split('_')[0]));
     analyses.forEach(a => activityDates.add(new Date(a.date).toISOString().split('T')[0]));
-
     if (activityDates.size === 0) return 0;
-
     const sorted = Array.from(activityDates).sort().reverse();
     const today = new Date().toISOString().split('T')[0];
     let streak = 0;
     let checkDate = new Date(today);
-
     for (let i = 0; i < 365; i++) {
       const dateStr = checkDate.toISOString().split('T')[0];
-      if (sorted.includes(dateStr)) {
-        streak++;
-      } else if (i > 0) {
-        break;
-      }
+      if (sorted.includes(dateStr)) streak++;
+      else if (i > 0) break;
       checkDate.setDate(checkDate.getDate() - 1);
     }
     return streak;
@@ -241,14 +245,17 @@ const Storage = {
 
   // ==================== EXPORT/IMPORT ====================
   async exportAll() {
+    try {
+      if (this._useApi) return await API.get('/export');
+    } catch (e) { /* fallback */ }
     const sports = ['cricket', 'football', 'tennis', 'basketball', 'hockey', 'volleyball'];
-    const data = { userProfile: await this.getUserProfile() };
+    const data = { userProfile: await this.getUserProfile(), sports: {} };
     for (const sport of sports) {
-      data[sport] = {
+      data.sports[sport] = {
         profile: await this.getProfile(sport),
         schedule: await this.getSchedule(sport),
         analyses: await this.getAnalyses(sport),
-        sessions: await this.getCompletedSessions(sport),
+        completedSessions: await this.getCompletedSessions(sport),
         progress: await this.getProgress(sport),
       };
     }
@@ -256,20 +263,24 @@ const Storage = {
   },
 
   async importAll(data) {
+    try {
+      if (this._useApi) { await API.post('/import', data); this._cache = {}; return; }
+    } catch (e) { /* fallback */ }
     if (data.userProfile) await this.saveUserProfile(data.userProfile);
+    const sportData = data.sports || data; // support old format
     const sports = ['cricket', 'football', 'tennis', 'basketball', 'hockey', 'volleyball'];
     for (const sport of sports) {
-      if (data[sport]) {
-        if (data[sport].profile) await this.saveProfile(sport, data[sport].profile);
-        if (data[sport].schedule) await this.saveSchedule(sport, data[sport].schedule);
-        if (data[sport].analyses) await this.set(`${sport}/analyses`, data[sport].analyses);
-        if (data[sport].sessions) await this.set(`${sport}/sessions`, data[sport].sessions);
-        if (data[sport].progress) await this.set(`${sport}/progress`, data[sport].progress);
+      const sd = sportData[sport];
+      if (sd) {
+        if (sd.profile) await this.saveProfile(sport, sd.profile);
+        if (sd.schedule) await this.saveSchedule(sport, sd.schedule);
+        if (sd.analyses) this._localSet(`${sport}/analyses`, sd.analyses);
+        if (sd.completedSessions || sd.sessions) this._localSet(`${sport}/sessions`, sd.completedSessions || sd.sessions);
+        if (sd.progress) this._localSet(`${sport}/progress`, sd.progress);
       }
     }
   },
 
-  // Clear cache when switching contexts
   clearCache() {
     this._cache = {};
   },
