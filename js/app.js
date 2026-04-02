@@ -305,6 +305,7 @@ const App = {
     const sportData = SportsData[sport];
     if (!sportData) return;
 
+    // Populate analysis types
     const container = document.getElementById('analysis-type-selector');
     if (!container) return;
 
@@ -323,6 +324,22 @@ const App = {
         Analysis.currentType = btn.dataset.type;
       });
     });
+
+    // Populate role selector
+    const roleSelect = document.getElementById('analysis-role-selector');
+    if (roleSelect && sportData.roles) {
+      roleSelect.innerHTML = sportData.roles.map(r =>
+        `<option value="${r.id}">${r.name}</option>`
+      ).join('');
+    }
+
+    // Reset upload zone when switching sports
+    const uploadZone = document.getElementById('analysis-upload-zone');
+    const uploadedVideo = document.getElementById('uploaded-video');
+    if (uploadZone) uploadZone.style.display = '';
+    if (uploadedVideo) { uploadedVideo.style.display = 'none'; uploadedVideo.src = ''; }
+    const startBtn = document.getElementById('start-analysis');
+    if (startBtn) startBtn.disabled = true;
   },
 
   bindAnalysis() {
@@ -343,8 +360,8 @@ const App = {
       if (files[0]) {
         const video = document.getElementById('uploaded-video');
         video.src = URL.createObjectURL(files[0]);
-        video.classList.remove('hidden');
-        document.getElementById('analysis-upload-zone').classList.add('hidden');
+        video.style.display = 'block';
+        document.getElementById('analysis-upload-zone').style.display = 'none';
         document.getElementById('start-analysis').disabled = false;
       }
     });
@@ -399,12 +416,12 @@ const App = {
       const blob = new Blob(this.recordedChunks, { type: 'video/webm' });
       const video = document.getElementById('uploaded-video');
       video.src = URL.createObjectURL(blob);
-      video.classList.remove('hidden');
+      video.style.display = 'block';
       document.querySelectorAll('.src-btn').forEach(b => b.classList.remove('active'));
       document.querySelector('[data-source="upload"]')?.classList.add('active');
       document.querySelectorAll('.video-source').forEach(s => s.classList.remove('active'));
       document.getElementById('upload-source')?.classList.add('active');
-      document.getElementById('analysis-upload-zone')?.classList.add('hidden');
+      document.getElementById('analysis-upload-zone').style.display = 'none';
     };
     this.mediaRecorder.start();
     document.getElementById('camera-start')?.classList.add('hidden');
@@ -422,6 +439,7 @@ const App = {
   async runAnalysis() {
     const sport = this.currentSport;
     const type = Analysis.currentType;
+    const role = document.getElementById('analysis-role-selector')?.value;
     if (!sport || !type) return;
 
     const video = document.getElementById('uploaded-video');
@@ -456,6 +474,7 @@ const App = {
 
     if (progressFill) progressFill.style.width = '100%';
     if (progressText) progressText.textContent = 'Complete!';
+    result.role = role;
     this.lastAnalysisResult = result;
     this.displayFeedback(result);
     btn.disabled = false;
@@ -466,6 +485,15 @@ const App = {
     document.getElementById('feedback-placeholder')?.classList.add('hidden');
     const resultsEl = document.getElementById('feedback-results');
     resultsEl?.classList.remove('hidden');
+
+    // Show role in feedback header
+    const roleLabel = document.getElementById('feedback-role');
+    if (roleLabel && result.role) {
+      const sportData = SportsData[this.currentSport];
+      const roleInfo = sportData?.roles?.find(r => r.id === result.role);
+      roleLabel.textContent = roleInfo ? `Role: ${roleInfo.name}` : '';
+      roleLabel.style.display = roleInfo ? 'block' : 'none';
+    }
 
     const score = result.overallScore;
     const scoreNum = document.getElementById('overall-score');
@@ -506,6 +534,7 @@ const App = {
     const r = this.lastAnalysisResult;
     await Storage.saveAnalysis(this.currentSport, {
       analysisType: r.analysisType || r.type,
+      role: r.role,
       overallScore: r.overallScore,
       feedback: r.feedback,
       drills: r.drills,
