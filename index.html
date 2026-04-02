@@ -276,6 +276,8 @@
     background:var(--bg-surface);color:var(--text-muted);text-align:center;transition:var(--transition);
   }
   .src-btn.active{background:var(--primary);color:#fff}
+  .video-source{display:none}
+  .video-source.active{display:block}
   #analysis-upload-zone{
     border:2px dashed var(--bg-surface);border-radius:var(--radius);
     padding:3rem 1.5rem;text-align:center;color:var(--text-muted);transition:var(--transition);
@@ -764,22 +766,25 @@
                 <button class="src-btn" data-source="camera" id="camera-source">&#127909; Live Camera</button>
               </div>
 
-              <div id="analysis-upload-zone">
-                <span class="upload-icon">&#128249;</span>
-                <p>Drag & drop your video here</p>
-                <small>Or click to browse. Supports MP4, MOV, WebM</small>
-                <input type="file" id="analysis-video-upload" accept="video/*">
+              <div class="video-source active" id="upload-source-panel">
+                <div id="analysis-upload-zone">
+                  <span class="upload-icon">&#128249;</span>
+                  <p>Drag & drop your video here</p>
+                  <small>Or click to browse. Supports MP4, MOV, WebM</small>
+                  <input type="file" id="analysis-video-upload" accept="video/*">
+                </div>
+                <video id="uploaded-video" controls></video>
               </div>
 
-              <div style="position:relative;display:none" id="camera-container">
-                <video id="camera-video" autoplay playsinline></video>
-                <canvas id="pose-canvas"></canvas>
-              </div>
-              <video id="uploaded-video" controls></video>
-
-              <div class="camera-controls" style="display:none" id="camera-controls">
-                <button id="camera-start">&#9654; Start Camera</button>
-                <button id="camera-stop">&#9632; Stop</button>
+              <div class="video-source" id="camera-source-panel">
+                <div style="position:relative" id="camera-container">
+                  <video id="camera-video" autoplay playsinline></video>
+                  <canvas id="pose-canvas"></canvas>
+                </div>
+                <div class="camera-controls">
+                  <button id="camera-start">&#9654; Start Camera</button>
+                  <button id="camera-stop">&#9632; Stop</button>
+                </div>
               </div>
 
               <button id="start-analysis">&#9889; Analyze Technique</button>

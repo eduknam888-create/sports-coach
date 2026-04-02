@@ -341,7 +341,7 @@ const App = {
         document.querySelectorAll('.src-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         document.querySelectorAll('.video-source').forEach(s => s.classList.remove('active'));
-        document.getElementById(`${btn.dataset.source}-source`)?.classList.add('active');
+        document.getElementById(`${btn.dataset.source}-source-panel`)?.classList.add('active');
         if (btn.dataset.source === 'camera') this.startCamera();
         else this.stopCamera();
       });
@@ -351,10 +351,15 @@ const App = {
     this.setupUploadZone('analysis-upload-zone', 'analysis-video-upload', (files) => {
       if (files[0]) {
         const video = document.getElementById('uploaded-video');
-        video.src = URL.createObjectURL(files[0]);
-        video.style.display = 'block';
-        document.getElementById('analysis-upload-zone').style.display = 'none';
-        document.getElementById('start-analysis').disabled = false;
+        const zone = document.getElementById('analysis-upload-zone');
+        const url = URL.createObjectURL(files[0]);
+        video.onloadeddata = () => {
+          video.style.display = 'block';
+          zone.style.display = 'none';
+          document.getElementById('start-analysis').disabled = false;
+        };
+        video.src = url;
+        video.load();
       }
     });
 
@@ -372,7 +377,12 @@ const App = {
     const input = document.getElementById(inputId);
     if (!zone || !input) return;
 
-    zone.addEventListener('click', () => input.click());
+    // The file input covers the zone via CSS (position:absolute;inset:0),
+    // so clicks on the zone naturally open the file picker. Only add
+    // programmatic click for cases where the input doesn't cover (e.g. drag).
+    zone.addEventListener('click', (e) => {
+      if (e.target !== input) input.click();
+    });
     zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('dragover'); });
     zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
     zone.addEventListener('drop', (e) => { e.preventDefault(); zone.classList.remove('dragover'); onFiles(e.dataTransfer.files); });
@@ -407,13 +417,17 @@ const App = {
     this.mediaRecorder.onstop = () => {
       const blob = new Blob(this.recordedChunks, { type: 'video/webm' });
       const video = document.getElementById('uploaded-video');
+      video.onloadeddata = () => {
+        video.style.display = 'block';
+        document.getElementById('analysis-upload-zone').style.display = 'none';
+        document.getElementById('start-analysis').disabled = false;
+      };
       video.src = URL.createObjectURL(blob);
-      video.style.display = 'block';
+      video.load();
       document.querySelectorAll('.src-btn').forEach(b => b.classList.remove('active'));
       document.querySelector('[data-source="upload"]')?.classList.add('active');
       document.querySelectorAll('.video-source').forEach(s => s.classList.remove('active'));
-      document.getElementById('upload-source')?.classList.add('active');
-      document.getElementById('analysis-upload-zone').style.display = 'none';
+      document.getElementById('upload-source-panel')?.classList.add('active');
     };
     this.mediaRecorder.start();
     document.getElementById('camera-start')?.classList.add('hidden');
@@ -434,16 +448,35 @@ const App = {
     if (!sport || !type) return;
 
     const video = document.getElementById('uploaded-video');
+    const hasVideo = video?.src && video.src !== '' && video.src !== window.location.href;
+
+    // If no video uploaded, prompt user
+    if (!hasVideo) {
+      this.toast('Please upload a video first.', 'error');
+      return;
+    }
+
     const progressBar = document.getElementById('analysis-progress');
     const progressFill = progressBar?.querySelector('.progress-bar-fill');
     const progressText = progressBar?.querySelector('.progress-label');
     const btn = document.getElementById('start-analysis');
 
     btn.disabled = true;
-    progressBar?.classList.remove('hidden');
+    if (progressBar) progressBar.style.display = 'block';
+
+    // Wait for video to be ready if not yet loaded
+    if (video.readyState < 2) {
+      if (progressText) progressText.textContent = 'Loading video...';
+      if (progressFill) progressFill.style.width = '5%';
+      await new Promise((resolve) => {
+        video.onloadeddata = resolve;
+        video.load();
+        setTimeout(resolve, 5000); // timeout after 5s
+      });
+    }
 
     let result;
-    if (video?.src && video.readyState >= 2 && video.duration > 0) {
+    if (video.readyState >= 2 && video.duration > 0) {
       if (progressText) progressText.textContent = 'Initializing AI...';
       if (progressFill) progressFill.style.width = '10%';
       try {
@@ -455,6 +488,7 @@ const App = {
         result = await Analysis.simulateAnalysis(sport, type);
       }
     } else {
+      // Fallback: run simulated analysis with progress animation
       for (let i = 0; i <= 100; i += 5) {
         if (progressFill) progressFill.style.width = i + '%';
         if (progressText) progressText.textContent = i < 30 ? 'Detecting pose...' : i < 70 ? 'Analyzing technique...' : 'Generating feedback...';
@@ -468,13 +502,14 @@ const App = {
     this.lastAnalysisResult = result;
     this.displayFeedback(result);
     btn.disabled = false;
-    setTimeout(() => progressBar?.classList.add('hidden'), 2000);
+    setTimeout(() => { if (progressBar) progressBar.style.display = 'none'; }, 2000);
   },
 
   displayFeedback(result) {
-    document.getElementById('feedback-placeholder')?.classList.add('hidden');
+    const placeholder = document.getElementById('feedback-placeholder');
+    if (placeholder) placeholder.style.display = 'none';
     const resultsEl = document.getElementById('feedback-results');
-    resultsEl?.classList.remove('hidden');
+    if (resultsEl) resultsEl.style.display = 'block';
 
     const score = result.overallScore;
     const scoreNum = document.getElementById('overall-score');
